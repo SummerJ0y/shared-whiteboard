@@ -33,10 +33,27 @@ export default function Home() {
       drawLine(x0, y0, x1, y1, false);
     });
 
+    // tell the browser don't start to slide yet
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+
     return () => {
       socket.off("draw");
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
+
+  const getCanvasCoords = (touch, canvas) => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  };
+  
 
   const drawLine = (x0, y0, x1, y1, emit = true) => {
     const ctx = ctxRef.current;
@@ -69,13 +86,57 @@ export default function Home() {
     isDrawing.current = null;
   };
 
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+  
+    // only response to apple pencil, not finger
+    if (touch.touchType !== "stylus") return;
+  
+    e.preventDefault(); // disable the default sliding
+  
+    const { x, y } = getCanvasCoords(touch, canvasRef.current);
+    isDrawing.current = { x, y };
+  };
+  
+  const handleTouchMove = (e) => {
+    const touch = e.touches[0];
+    if (touch.touchType !== "stylus" || !isDrawing.current) return;
+  
+    e.preventDefault();
+  
+    const { x, y } = getCanvasCoords(touch, canvasRef.current);
+    const { x: prevX, y: prevY } = isDrawing.current;
+    
+    drawLine(prevX, prevY, x, y, true);
+    isDrawing.current = { x, y };
+  };
+  
+  const handleTouchEnd = (e) => {
+    const touch = e.changedTouches[0];
+    if (touch.touchType !== "stylus") return;
+  
+    e.preventDefault();
+    isDrawing.current = null;
+  };
+  
+
   return (
     <canvas
       ref={canvasRef}
-      style={{ display: "block", border: "1px solid #ccc" }}
+      style={{
+        display: "block",
+        border: "1px solid #ccc",
+        width: "100vw",
+        height: "100vh",
+        touchAction: "manipulation" // 
+      }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     />
+
   );
 }
