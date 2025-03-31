@@ -17,10 +17,28 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
+  let currentCanvas = null;
+  // Debug all events received from this client
+  socket.onAny((event, ...args) => {
+    console.log(`[Server] Socket ${socket.id} sent event: ${event}`, args);
+  });
+
+  socket.on("join-canvas", (canvasId) => {
+    // if already in a canvas room, leave it first to avoid being in multiple rooms
+    // can be changed later for more advanced features.
+    if (currentCanvas) {
+      socket.leave(currentCanvas);
+    }
+    socket.join(canvasId);
+    currentCanvas = canvasId;
+    console.log(`Socket ${socket.id} joined canvas ${canvasId}`);
+  });
 
   socket.on("draw", (data) => {
-    // Broadcast drawing data to all *other* clients
-    socket.broadcast.emit("draw", data);
+    if (currentCanvas) {
+      // Send to all others in the same canvas
+      socket.to(currentCanvas).emit("draw", data);
+    }
   });
 
   socket.on("disconnect", () => {
@@ -28,6 +46,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, () => {
-  console.log("Server running on http://localhost:3001");
+server.listen(5001, () => {
+  console.log("Server running on http://localhost:5001");
 });

@@ -1,16 +1,4 @@
 // import styles from "./page.module.css";
-
-// export default function Home() {
-//   return (
-//     <div className={styles.page}>
-//       <main className={styles.main}>
-//         Hello! This is our whiteboard!
-//       </main>
-//     </div>
-//   );
-// }
-
-// pages/index.js
 "use client";
 import { useEffect, useRef } from "react";
 import socket from "./utils/socket";
@@ -21,6 +9,11 @@ export default function Home() {
   const isDrawing = useRef(false);
 
   useEffect(() => {
+    const canvasId = new URLSearchParams(window.location.search).get("canvas") || "default";
+    
+    // Join canvas room
+    socket.emit("join-canvas", canvasId);
+
     const canvas = canvasRef.current;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -31,6 +24,10 @@ export default function Home() {
     ctx.lineWidth = 3;
     ctxRef.current = ctx;
 
+    // Debug all incoming events from server
+    socket.onAny((event, ...args) => {
+      console.log("Socket event received:", event, args);
+    });
     // Listen for incoming draw events
     socket.on("draw", ({ x0, y0, x1, y1 }) => {
       drawLine(x0, y0, x1, y1, false);

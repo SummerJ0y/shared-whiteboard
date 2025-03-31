@@ -2,6 +2,6 @@
 import { io } from "socket.io-client";
 
 // Only connect once (on first import)
-const socket = io("http://localhost:3001");
+const socket = io("http://localhost:5001");
 
 export default socket;
