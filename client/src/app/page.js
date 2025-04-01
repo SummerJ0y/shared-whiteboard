@@ -1,13 +1,14 @@
-// import styles from "./page.module.css";
 "use client";
+import styles from "./page.module.css";
 import { useEffect, useRef, useState } from "react";
 import socket from "./utils/socket";
 
 export default function Home() {
+  const [format, setFormat] = useState("landscape");
+  
   // state: "draw" or "text"
   const [mode, setMode] = useState("draw"); 
-
-  // for draw
+  // for draw  
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
@@ -23,16 +24,16 @@ export default function Home() {
     socket.emit("join-canvas", canvasId);
 
     const canvas = canvasRef.current;
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
-    const resizeCanvas = () => {
-      const style = getComputedStyle(canvas);
-      canvas.width = parseInt(style.width);
-      canvas.height = parseInt(style.height);
-    };
-    resizeCanvas();
-    
     const ctx = canvas.getContext("2d");
+
+    if (format === "portrait") {
+      canvas.width = 674;
+      canvas.height = 953;
+    } else {
+      canvas.width = 953;
+      canvas.height = 674;
+    }
+
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 3;
@@ -63,7 +64,7 @@ export default function Home() {
       canvas.removeEventListener("touchmove", handleTouchMove);
       canvas.removeEventListener("touchend", handleTouchEnd);
     };
-  }, []);
+  }, [format]);
 
   const getCanvasCoords = (touch, canvas) => {
     const rect = canvas.getBoundingClientRect();
@@ -167,6 +168,8 @@ export default function Home() {
   
   
   return (
+<div className={styles.main}>
+  <div className={styles.canvasContainer}>
     <div style={{ position: "relative" }}>
       <div style={{
         position: "absolute",
@@ -228,7 +231,7 @@ export default function Home() {
           }}
         />
       )}
+      </div>
     </div>
-  );
-  
+  );  
 }
