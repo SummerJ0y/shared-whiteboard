@@ -77,6 +77,24 @@
   height: 100%;
   background-color: white;
 }
+
+.middleSection2ForText{
+  display: flex; 
+  flex-direction: column;
+  border: 1px solid lightgray;
+  flex: 1;
+  height: 100%;
+  background-color: white;
+}
+
+.middleSection2ForDraw{
+  display: flex; 
+  flex-direction: column;
+  border: 1px solid lightgray;
+  flex: 1;
+  height: 100%;
+  background-color: white;
+}
   
 .rightSection2{
   display: flex; 

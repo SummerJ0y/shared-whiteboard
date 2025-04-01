@@ -1,9 +1,10 @@
 "use client";
 import styles from "./page.module.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import socket from "./utils/socket";
 
 export default function Home() {
+  const [format, setFormat] = useState("landscape");
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
@@ -15,13 +16,20 @@ export default function Home() {
     socket.emit("join-canvas", canvasId);
 
     const canvas = canvasRef.current;
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
-    const style = getComputedStyle(canvas);
-    canvas.width = parseInt(style.width);
-    canvas.height = parseInt(style.height)
+    // const style = getComputedStyle(canvas);
+    // canvas.width = parseInt(style.width);
+    // canvas.height = parseInt(style.height)
 
     const ctx = canvas.getContext("2d");
+
+    if (format === "portrait") {
+      canvas.width = 674;
+      canvas.height = 953;
+    } else {
+      canvas.width = 953;
+      canvas.height = 674;
+    }
+
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 3;
@@ -39,7 +47,7 @@ export default function Home() {
     return () => {
       socket.off("draw");
     };
-  }, []);
+  }, [format]);
 
   const drawLine = (x0, y0, x1, y1, emit = true) => {
     const ctx = ctxRef.current;
