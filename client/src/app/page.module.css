@@ -1,0 +1,19 @@
+.main {
+  background-color: var(--background-color);
+}
+
+.canvasContainer {
+  overflow: auto;
+  background-color: var(--background-color);
+  padding: 30px 25px 30px 25px;
+}
+
+.drawingCanvas {
+  /* A3 paper ratio */
+  width: 953x;
+  height: 674px;
+  border: 1px solid red;
+  background-color: white;
+  margin: 0 auto;
+  display: block;
+}

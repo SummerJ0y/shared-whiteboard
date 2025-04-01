@@ -1,0 +1,87 @@
+.headerOuterBox {
+  background-color: var(--background-color);
+  border-bottom: solid;
+  border-bottom-width: 1px;
+  border-color: black;
+  height: 170px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ------------------- first row of the header ---------------------- */
+.row1 {
+  display: flex;  
+  flex-direction: row;
+  height: 100px;
+  width: 100%;
+  border: 1px solid black; 
+  padding: 15px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+}
+
+.leftSection1 {
+  display: flex; 
+  border: 1px solid lightgray;
+  border-radius: 10;
+  width: 80px;
+  height: 100%;
+  background-color: white;
+}
+
+.middleSection1{
+  display: flex; 
+  flex-direction: column;
+  border: 1px solid lightgray;
+  flex: 1;
+  height: 100%;
+  background-color: white;
+}
+
+.rightSection1{
+  display: flex; 
+  border: 1px solid lightgray;
+  height: 100%;
+  width: 140px;
+  background-color: white;
+}
+
+.fileNameBox {
+  display: flex;
+  border: 1px solid lightgray;
+  height: 50%;
+  width: 100%;
+}
+
+.docMenuBar {
+  display: flex;
+  border: 1px solid lightgray;
+  height: 50%;
+  width: 100%;
+}
+/* ------------------- second row of the header ---------------------- */
+.row2 {
+  display: flex;  
+  flex-direction: row;
+  height: 50px;
+  width: 100%;
+  border: 1px solid black;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.leftSection2 {
+  display: flex; 
+  flex: 1;
+  border: 1px solid lightgray;
+  height: 100%;
+  background-color: white;
+}
+  
+.rightSection2{
+  display: flex; 
+  border: 1px solid lightgray;
+  height: 100%;
+  width: 140px;
+  background-color: white;
+}

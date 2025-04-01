@@ -1,5 +1,5 @@
-// import styles from "./page.module.css";
 "use client";
+import styles from "./page.module.css";
 import { useEffect, useRef } from "react";
 import socket from "./utils/socket";
 
@@ -15,8 +15,11 @@ export default function Home() {
     socket.emit("join-canvas", canvasId);
 
     const canvas = canvasRef.current;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // canvas.width = window.innerWidth;
+    // canvas.height = window.innerHeight;
+    const style = getComputedStyle(canvas);
+    canvas.width = parseInt(style.width);
+    canvas.height = parseInt(style.height)
 
     const ctx = canvas.getContext("2d");
     ctx.lineCap = "round";
@@ -70,12 +73,16 @@ export default function Home() {
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ display: "block", border: "1px solid #ccc" }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-    />
+    <div className={styles.main}>
+      <div className={styles.canvasContainer}>
+        <canvas
+          ref={canvasRef}
+          className={styles.drawingCanvas}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        />
+      </div>    
+    </div>
   );
 }
