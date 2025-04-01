@@ -4,11 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import socket from "./utils/socket";
 
 export default function Home() {
-  const [format, setFormat] = useState("landscape");
-  
-  // state: "draw" or "text"
-  const [mode, setMode] = useState("draw"); 
-  // for draw  
+  const [format, setFormat] = useState("landscape"); 
+  const [mode, setMode] = useState("draw"); // state: "draw" or "text"
+
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
@@ -187,13 +185,7 @@ export default function Home() {
   
       <canvas
         ref={canvasRef}
-        style={{
-          display: "block",
-          border: "1px solid #ccc",
-          width: "100vw",
-          height: "100vh",
-          touchAction: "manipulation"
-        }}
+        className={styles.drawingCanvas}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
