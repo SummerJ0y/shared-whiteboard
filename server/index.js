@@ -41,6 +41,13 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("add-text", (data) => {
+    if (currentCanvas) {
+      socket.to(currentCanvas).emit("add-text", data);
+      console.log(`[Server] add-text from ${socket.id}:`, data);
+    }
+  });  
+
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
