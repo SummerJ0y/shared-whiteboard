@@ -1,1 +1,13 @@
+:root {
+  /* --background-color: #f9fbfd; google doc's bg color */
+  --background-color: #f7fcff; /* bg color for test */
+  --lightBlue: #b9e3ff;
+}
 
+body, html {
+  margin: 0;
+  height: 100%;
+  overflow: auto;
+  overscroll-behavior: none; /* prevent the stretch-like over scroll animation */
+}
+ 

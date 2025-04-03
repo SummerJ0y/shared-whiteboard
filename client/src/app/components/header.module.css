@@ -1,0 +1,173 @@
+.headerOuterBox {
+  background-color: var(--background-color);
+  border-bottom: solid;
+  border-bottom-width: 1px;
+  border-color: black;
+  height: 170px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ------------------- first row of the header ---------------------- */
+.row1 {
+  display: flex;  
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  height: 100px;
+  width: 100%;
+  border: none; 
+  padding: 15px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+}
+
+.leftSection1 {
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  width: 80px;
+  height: 80px;
+  background-color: var(--background-color);
+  margin-right: 10px;
+  overflow: hidden;
+}
+
+.middleSection1{
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  flex: 1;
+  height: 100%;
+  background-color: var(--background-color);
+}
+
+.rightSection1{
+  display: flex; 
+  justify-content: right;
+  align-items: center;
+  height: 100%;
+  width: 160px;
+  background-color: transparent;
+}
+
+.fileNameBox {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  border: none;
+  height: 60%;
+  width: 100%;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.docMenuBar {
+  display: flex;
+  border: none;
+  height: 40%;
+  width: 100%;
+}
+
+.shareButton {
+  width: 40px;
+  background-color: var(--lightBlue);
+  color: black;
+  padding: 10px 20px 12px 18px;  
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  user-select: none;
+}
+.shareButton:hover {
+  background-color: #47b4ff;
+  color: black;
+}
+.shareButton:active {
+  opacity: 0.6;
+}
+
+.userIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: block;
+  border: 1px solid gray;
+  border-radius: 100px;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+}
+/* ------------------- second row of the header ---------------------- */
+.row2 {
+  display: flex;  
+  flex-direction: row;
+  height: 50px;
+  width: 100%;
+  border: 1px solid black;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.leftSection2 {
+  display: flex; 
+  flex: 1;
+  border: none;
+  height: 100%;
+  background-color: white;
+}
+
+.middleSection2ForText{
+  display: flex; 
+  flex-direction: column;
+  border: 1px solid lightgray;
+  flex: 1;
+  height: 100%;
+  background-color: white;
+}
+
+.middleSection2ForDraw{
+  display: flex; 
+  flex-direction: column;
+  border: 1px solid lightgray;
+  flex: 1;
+  height: 100%;
+  background-color: white;
+}
+  
+.rightSection2{
+  display: flex; 
+  justify-content: right;
+  border: none;
+  height: 100%;
+  width: 140px;
+  background-color: white;
+}
+
+/* ------------------- styles for button ---------------------- */
+
+.buttonType1 {
+  background-color: var(--lightBlue);
+  border: none;
+  border-radius: 15px;
+  width: 50px;
+  height: auto;
+  padding: 7px 10px 7px 10px;
+  transition: background-color 0.3s;
+  color: black;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+}
+.buttonType1:hover {
+  scale: 1.05;
+}
+.buttonType1:active {
+  opacity: 0.6;
+}

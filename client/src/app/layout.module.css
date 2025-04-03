@@ -1,3 +1,11 @@
-.main {
-    background-color: white;
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.whiteboard {
+    overflow-y: auto;
+    background-color: var(--background-color);
+    flex: 1;
 }
