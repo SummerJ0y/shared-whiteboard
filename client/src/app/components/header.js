@@ -1,15 +1,20 @@
 "use client"
-import { useState } from 'react';
+import Image from 'next/image';
+import { usePageContext } from '../context/PageContext';
 import styles from './header.module.css';
 
 export default function Header() {
-    const [mode, setMode] = useState("text");
-    const [format, setFormat] = useState("landscape")
+    const { mode, setMode, setFormat } = usePageContext();
     return (
         <div className={styles.headerOuterBox}>
             <div className={styles.row1}>
                 <div className={styles.leftSection1}>
-                    logo
+                    <Image
+                     src="/favicon.ico"
+                     width={80}
+                     height={80}
+                     alt="logo"
+                     />
                 </div>
                 <div className={styles.middleSection1}>
                     <div className={styles.fileNameBox}>
@@ -20,7 +25,12 @@ export default function Header() {
                     </div>
                 </div>
                 <div className={styles.rightSection1}>
-                    userIcon and share button
+                    <div className={styles.shareButton}>
+                        Share
+                    </div>
+                    <div className={styles.userIcon} style={{ marginLeft: '10px' }}>
+                        
+                    </div>
                 </div>
             </div>
             <div className={styles.row2}>
@@ -39,8 +49,8 @@ export default function Header() {
                     </div>
                 )}
                 <div className={styles.rightSection2}>
-                    <button onClick={() => setMode("text")}>Text</button>
-                    <button onClick={() => setMode("draw")}>Draw</button>
+                    <button className={styles.buttonType1} style={{ marginRight: '10px' }} onClick={() => setMode("text")}>Text</button>
+                    <button className={styles.buttonType1} onClick={() => setMode("draw")}>Draw</button>
                 </div>
             </div>
         </div>

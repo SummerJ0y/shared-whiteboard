@@ -1,3 +1,4 @@
+import { PageContextProvider } from './context/PageContext';
 import Header from './components/header';
 import './globals.css';
 import styles from './layout.module.css';
@@ -14,10 +15,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <div className={styles.mainContainer}>
-          <Header />
-          <main className={styles.whiteboard}>{children}</main>
-        </div>
+        <PageContextProvider>
+          <div className={styles.mainContainer}>
+            <Header />
+            <main className={styles.whiteboard}>{children}</main>
+          </div>
+        </PageContextProvider>
       </body>
     </html>
   );

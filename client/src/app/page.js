@@ -1,14 +1,15 @@
 "use client";
-import styles from "./page.module.css";
 import { useEffect, useRef, useState } from "react";
 import socket from "./utils/socket";
+import { usePageContext } from "./context/PageContext";
+import styles from "./page.module.css";
 
 export default function Home() {
   const FONT_SIZE = 16;
   const TEXT_OFFSET_Y = 17;
   
-  const [format, setFormat] = useState("landscape"); 
-  const [mode, setMode] = useState("draw"); // state: "draw" or "text"
+  const { mode } = usePageContext(); // import the state that records the "draw" and "text" mode
+  const { format } = usePageContext(); // import the state that records the "landscape" and "portrait" page format
 
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -31,11 +32,15 @@ export default function Home() {
     if (format === "portrait") {
       canvas.width = 674;
       canvas.height = 953;
+      canvas.style.width = "674px";
+      canvas.style.height = "953px";
     } else {
       canvas.width = 953;
       canvas.height = 674;
+      canvas.style.width = "953px";
+      canvas.style.height = "674px";
     }
-
+    console.log("format changed to:", format);
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 3;
@@ -179,22 +184,6 @@ export default function Home() {
           ref={containerRef}
           style={{ position: "relative", width: "fit-content", height: "fit-content" }}
         >
-          <div
-            style={{
-              position: "absolute",
-              top: 10,
-              left: 10,
-              zIndex: 20,
-              background: "rgba(255, 255, 255, 0.8)",
-              padding: "8px",
-              borderRadius: "8px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
-            }}
-          >
-            <button onClick={() => setMode("draw")}>✏️ draw mode</button>
-            <button onClick={() => setMode("text")}>🔤 type mode</button>
-          </div>
-
           <canvas
             ref={canvasRef}
             width={format === "portrait" ? 674 : 953}
@@ -249,4 +238,49 @@ export default function Home() {
       </div>
     </div>
   );
+//     <div className={styles.main}>      
+//       <div className={styles.canvasContainer}>    
+//         <canvas 
+//           ref={canvasRef}
+//           className={styles.drawingCanvas}
+//           onMouseDown={handleMouseDown}
+//           onMouseMove={handleMouseMove}
+//           onMouseUp={handleMouseUp}
+//           onTouchStart={handleTouchStart}
+//           onTouchMove={handleTouchMove}
+//           onTouchEnd={handleTouchEnd}
+//           onClick={handleCanvasClick}
+//         />      
+//         {textInput && (
+//           <input
+//             ref={inputRef}
+//             value={textInput.value}
+//             onChange={(e) => setTextInput({ ...textInput, value: e.target.value })}
+//             onKeyDown={(e) => {
+//               if (e.key === "Enter" && textInput.value.trim()) {
+//                 drawText(textInput.x, textInput.y, textInput.value);
+//                 socket.emit("add-text", {
+//                   x: textInput.x,
+//                   y: textInput.y,
+//                   value: textInput.value
+//                 });
+//                 setTextInput(null);
+//               }
+//             }}
+//             style={{
+//               position: "absolute",
+//               top: textInput.y,
+//               left: textInput.x,
+//               fontSize: "16px",
+//               padding: "2px",
+//               border: "1px solid #aaa",
+//               background: "white",
+//               zIndex: 15
+//             }}
+//           />
+//         )}
+//       </div>      
+//     </div>    
+//   );  
+// >>>>>>> b1dbf1cda1afbbaf8b07b81c3a155c4949cfbd16
 }

@@ -3,13 +3,12 @@
 }
 
 .canvasContainer {
-  overflow: auto;
   background-color: var(--background-color);
   padding: 30px 25px 30px 25px;
 }
 
 .drawingCanvas {
-  /* A3 paper ratio */
+  /* A3 paper ratio as the default*/
   width: 953px;
   height: 674px;
   border: 1px solid red;
