@@ -10,7 +10,7 @@ app.use(cors()); // Allow frontend to connect from a different port (like 3000)
 const server = http.createServer(app); // Create a raw HTTP server
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://10.0.0.207:3000"],// React app runs here
+    origin: ["http://localhost:3000", "http://10.0.0.230:3000"],// React app runs here
     methods: ["GET", "POST"]
   }
 });

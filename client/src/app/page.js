@@ -4,10 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import socket from "./utils/socket";
 
 export default function Home() {
+  const FONT_SIZE = 16;
+  const TEXT_OFFSET_Y = 17;
+  
   const [format, setFormat] = useState("landscape"); 
   const [mode, setMode] = useState("draw"); // state: "draw" or "text"
 
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
 
@@ -61,6 +65,7 @@ export default function Home() {
       canvas.removeEventListener("touchstart", handleTouchStart);
       canvas.removeEventListener("touchmove", handleTouchMove);
       canvas.removeEventListener("touchend", handleTouchEnd);
+      socket.disconnect();
     };
   }, [format]);
 
@@ -145,8 +150,10 @@ export default function Home() {
 
   const handleCanvasClick = (e) => {
     if (mode !== "text") return; 
-  
-    const rect = canvasRef.current.getBoundingClientRect();
+    
+    const canvas = canvasRef.current;
+    const rect = containerRef.current.getBoundingClientRect();
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
   
@@ -159,72 +166,87 @@ export default function Home() {
 
   const drawText = (x, y, text) => {
     const ctx = ctxRef.current;
-    ctx.font = "16px Arial";
+    ctx.font = "17px Arial";
     ctx.fillStyle = "black";
     ctx.fillText(text, x, y);
   };
   
   
   return (
-<div className={styles.main}>
-  <div className={styles.canvasContainer}>
-    <div style={{ position: "relative" }}>
-      <div style={{
-        position: "absolute",
-        top: 10,
-        left: 10,
-        zIndex: 20,
-        background: "rgba(255, 255, 255, 0.8)",
-        padding: "8px",
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
-      }}>
-        <button onClick={() => setMode("draw")}>✏️ draw mode</button>
-        <button onClick={() => setMode("text")}>🔤 type mode</button>
-      </div>
-  
-      <canvas
-        ref={canvasRef}
-        className={styles.drawingCanvas}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onClick={handleCanvasClick}
-      />
-  
-      {textInput && (
-        <input
-          ref={inputRef}
-          value={textInput.value}
-          onChange={(e) => setTextInput({ ...textInput, value: e.target.value })}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && textInput.value.trim()) {
-              drawText(textInput.x, textInput.y, textInput.value);
-              socket.emit("add-text", {
-                x: textInput.x,
-                y: textInput.y,
-                value: textInput.value
-              });
-              setTextInput(null);
-            }
-          }}
-          style={{
-            position: "absolute",
-            top: textInput.y,
-            left: textInput.x,
-            fontSize: "16px",
-            padding: "2px",
-            border: "1px solid #aaa",
-            background: "white",
-            zIndex: 15
-          }}
-        />
-      )}
+    <div className={styles.main}>
+      <div className={styles.canvasContainer}>
+        <div
+          ref={containerRef}
+          style={{ position: "relative", width: "fit-content", height: "fit-content" }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              left: 10,
+              zIndex: 20,
+              background: "rgba(255, 255, 255, 0.8)",
+              padding: "8px",
+              borderRadius: "8px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
+            }}
+          >
+            <button onClick={() => setMode("draw")}>✏️ draw mode</button>
+            <button onClick={() => setMode("text")}>🔤 type mode</button>
+          </div>
+
+          <canvas
+            ref={canvasRef}
+            width={format === "portrait" ? 674 : 953}
+            height={format === "portrait" ? 953 : 674}
+            style={{
+              width: format === "portrait" ? 674 : 953,
+              height: format === "portrait" ? 953 : 674,
+              display: "block",
+              border: "1px solid #ccc"
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onClick={handleCanvasClick}
+          />
+
+          {textInput && (
+            <input
+              ref={inputRef}
+              value={textInput.value}
+              onChange={(e) =>
+                setTextInput({ ...textInput, value: e.target.value })
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && textInput.value.trim()) {
+                  drawText(textInput.x, textInput.y, textInput.value);
+                  socket.emit("add-text", {
+                    x: textInput.x,
+                    y: textInput.y,
+                    value: textInput.value
+                  });
+                  setTextInput(null);
+                }
+              }}
+              style={{
+                position: "absolute",
+                top: textInput.y - TEXT_OFFSET_Y,
+                left: textInput.x - 2,
+                fontSize: `${FONT_SIZE}px`,
+                lineHeight: `${FONT_SIZE}px`,
+                padding: "2px",
+                border: "1px solid #aaa",
+                background: "white",
+                zIndex: 15
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
-    </div>
-  );  
+  );
 }
