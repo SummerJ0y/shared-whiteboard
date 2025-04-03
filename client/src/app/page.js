@@ -1,12 +1,11 @@
 "use client";
-import styles from "./page.module.css";
 import { useEffect, useRef, useState } from "react";
 import socket from "./utils/socket";
-
-export default function Home() {
-  const [format, setFormat] = useState("landscape"); 
-  const [mode, setMode] = useState("draw"); // state: "draw" or "text"
-
+import { usePageContext } from "./context/PageContext";
+import styles from "./page.module.css";
+export default function Home() {  
+  const { mode } = usePageContext(); // import the state that records the "draw" and "text" mode
+  const { format } = usePageContext(); // import the state that records the "landscape" and "portrait" page format
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
@@ -27,11 +26,15 @@ export default function Home() {
     if (format === "portrait") {
       canvas.width = 674;
       canvas.height = 953;
+      canvas.style.width = "674px";
+      canvas.style.height = "953px";
     } else {
       canvas.width = 953;
       canvas.height = 674;
+      canvas.style.width = "953px";
+      canvas.style.height = "674px";
     }
-
+    console.log("format changed to:", format);
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 3;
@@ -168,21 +171,7 @@ export default function Home() {
   return (
 <div className={styles.main}>
   <div className={styles.canvasContainer}>
-    <div style={{ position: "relative" }}>
-      <div style={{
-        position: "absolute",
-        top: 10,
-        left: 10,
-        zIndex: 20,
-        background: "rgba(255, 255, 255, 0.8)",
-        padding: "8px",
-        borderRadius: "8px",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.15)"
-      }}>
-        <button onClick={() => setMode("draw")}>✏️ draw mode</button>
-        <button onClick={() => setMode("text")}>🔤 type mode</button>
-      </div>
-  
+    <div style={{ position: "relative" }}>  
       <canvas
         ref={canvasRef}
         className={styles.drawingCanvas}

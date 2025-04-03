@@ -11,10 +11,12 @@
 /* ------------------- first row of the header ---------------------- */
 .row1 {
   display: flex;  
+  justify-content: center;
+  align-items: center;
   flex-direction: row;
   height: 100px;
   width: 100%;
-  border: 1px solid black; 
+  border: none; 
   padding: 15px;
   margin-bottom: 5px;
   box-sizing: border-box;
@@ -22,42 +24,85 @@
 
 .leftSection1 {
   display: flex; 
-  border: 1px solid lightgray;
-  border-radius: 10;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
   width: 80px;
-  height: 100%;
-  background-color: white;
+  height: 80px;
+  background-color: var(--background-color);
+  margin-right: 10px;
+  overflow: hidden;
 }
 
 .middleSection1{
   display: flex; 
   flex-direction: column;
-  border: 1px solid lightgray;
+  align-items: center;
+  border: none;
   flex: 1;
   height: 100%;
-  background-color: white;
+  background-color: var(--background-color);
 }
 
 .rightSection1{
   display: flex; 
-  border: 1px solid lightgray;
+  justify-content: right;
+  align-items: center;
   height: 100%;
-  width: 140px;
-  background-color: white;
+  width: 160px;
+  background-color: transparent;
 }
 
 .fileNameBox {
   display: flex;
-  border: 1px solid lightgray;
-  height: 50%;
+  justify-content: left;
+  align-items: center;
+  border: none;
+  height: 60%;
   width: 100%;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .docMenuBar {
   display: flex;
-  border: 1px solid lightgray;
-  height: 50%;
+  border: none;
+  height: 40%;
   width: 100%;
+}
+
+.shareButton {
+  width: 40px;
+  background-color: var(--lightBlue);
+  color: black;
+  padding: 10px 20px 12px 18px;  
+  border-radius: 25px;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  user-select: none;
+}
+.shareButton:hover {
+  background-color: #47b4ff;
+  color: black;
+}
+.shareButton:active {
+  opacity: 0.6;
+}
+
+.userIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: block;
+  border: 1px solid gray;
+  border-radius: 100px;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
 }
 /* ------------------- second row of the header ---------------------- */
 .row2 {
@@ -73,7 +118,7 @@
 .leftSection2 {
   display: flex; 
   flex: 1;
-  border: 1px solid lightgray;
+  border: none;
   height: 100%;
   background-color: white;
 }
@@ -98,8 +143,31 @@
   
 .rightSection2{
   display: flex; 
-  border: 1px solid lightgray;
+  justify-content: right;
+  border: none;
   height: 100%;
   width: 140px;
   background-color: white;
+}
+
+/* ------------------- styles for button ---------------------- */
+
+.buttonType1 {
+  background-color: var(--lightBlue);
+  border: none;
+  border-radius: 15px;
+  width: 50px;
+  height: auto;
+  padding: 7px 10px 7px 10px;
+  transition: background-color 0.3s;
+  color: black;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+}
+.buttonType1:hover {
+  scale: 1.05;
+}
+.buttonType1:active {
+  opacity: 0.6;
 }

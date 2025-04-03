@@ -9,7 +9,7 @@
 }
 
 .drawingCanvas {
-  /* A3 paper ratio */
+  /* A3 paper ratio as the default*/
   width: 953px;
   height: 674px;
   border: 1px solid red;

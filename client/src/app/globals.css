@@ -1,6 +1,7 @@
 :root {
   /* --background-color: #f9fbfd; google doc's bg color */
-  --background-color: #fff6eb; /* bg color for test */
+  --background-color: #f7fcff; /* bg color for test */
+  --lightBlue: #b9e3ff;
 }
 
 body, html {
