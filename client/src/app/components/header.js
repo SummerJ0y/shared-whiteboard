@@ -49,8 +49,8 @@ export default function Header() {
                     </div>
                 )}
                 <div className={styles.rightSection2}>
-                    <button className={styles.buttonType1} style={{ marginRight: '10px' }} onClick={() => setMode("Type")}>Text</button>
-                    <button className={styles.buttonType1} onClick={() => setMode("Draw")}>Draw</button>
+                    <button className={styles.buttonType1} style={{ marginRight: '10px' }} onClick={() => setMode("text")}>Text</button>
+                    <button className={styles.buttonType1} onClick={() => setMode("draw")}>Draw</button>
                 </div>
             </div>
         </div>

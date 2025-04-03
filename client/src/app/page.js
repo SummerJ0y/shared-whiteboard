@@ -169,51 +169,48 @@ export default function Home() {
   
   
   return (
-<div className={styles.main}>
-  <div className={styles.canvasContainer}>
-    <div style={{ position: "relative" }}>  
-      <canvas
-        ref={canvasRef}
-        className={styles.drawingCanvas}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onClick={handleCanvasClick}
-      />
-  
-      {textInput && (
-        <input
-          ref={inputRef}
-          value={textInput.value}
-          onChange={(e) => setTextInput({ ...textInput, value: e.target.value })}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && textInput.value.trim()) {
-              drawText(textInput.x, textInput.y, textInput.value);
-              socket.emit("add-text", {
-                x: textInput.x,
-                y: textInput.y,
-                value: textInput.value
-              });
-              setTextInput(null);
-            }
-          }}
-          style={{
-            position: "absolute",
-            top: textInput.y,
-            left: textInput.x,
-            fontSize: "16px",
-            padding: "2px",
-            border: "1px solid #aaa",
-            background: "white",
-            zIndex: 15
-          }}
-        />
-      )}
-      </div>
-    </div>
-    </div>
+    <div className={styles.main}>      
+      <div className={styles.canvasContainer}>    
+        <canvas 
+          ref={canvasRef}
+          className={styles.drawingCanvas}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onClick={handleCanvasClick}
+        />      
+        {textInput && (
+          <input
+            ref={inputRef}
+            value={textInput.value}
+            onChange={(e) => setTextInput({ ...textInput, value: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && textInput.value.trim()) {
+                drawText(textInput.x, textInput.y, textInput.value);
+                socket.emit("add-text", {
+                  x: textInput.x,
+                  y: textInput.y,
+                  value: textInput.value
+                });
+                setTextInput(null);
+              }
+            }}
+            style={{
+              position: "absolute",
+              top: textInput.y,
+              left: textInput.x,
+              fontSize: "16px",
+              padding: "2px",
+              border: "1px solid #aaa",
+              background: "white",
+              zIndex: 15
+            }}
+          />
+        )}
+      </div>      
+    </div>    
   );  
 }
