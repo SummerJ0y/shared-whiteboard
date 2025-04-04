@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import socket from "../utils/socket";
 import { usePageContext } from "../context/PageContext";
 import styles from "../page.module.css";
+import { getCanvasCoords, drawLineOnCanvas } from "../utils/canvasUtils";
 
 export default function Home() {
   const FONT_SIZE = 16;
@@ -16,9 +17,11 @@ export default function Home() {
   const ctxRef = useRef(null);
   const isDrawing = useRef(false);
 
-  // for text
-  const [textInput, setTextInput] = useState(null); // { x, y, value }
-  const inputRef = useRef(null);
+  // for textInput
+  const [textBoxes, setTextBoxes] = useState([]); // { id, x, y, value }
+  const [editingId, setEditingId] = useState(null); // box id in editting state
+
+  const inputRefs = useRef({}); // key-value
 
   useEffect(() => {
     // TODO: generate url
@@ -32,15 +35,11 @@ export default function Home() {
     if (format === "portrait") {
       canvas.width = 674;
       canvas.height = 953;
-      canvas.style.width = "674px";
-      canvas.style.height = "953px";
     } else {
       canvas.width = 953;
       canvas.height = 674;
-      canvas.style.width = "953px";
-      canvas.style.height = "674px";
     }
-    console.log("format changed to:", format);
+
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 3;
@@ -50,13 +49,9 @@ export default function Home() {
     socket.onAny((event, ...args) => {
       console.log("Socket event received:", event, args);
     });
-    // Listen for incoming draw events
-    socket.on("draw", ({ x0, y0, x1, y1 }) => {
-      drawLine(x0, y0, x1, y1, false);
-    });
-
-    socket.on("add-text", ({ x, y, value }) => {
-      drawText(x, y, value);
+    // Listen for incoming add-text events
+    socket.on("add-text", ({ id, x, y, value }) => {
+        setTextBoxes((prev) => [...prev, { id, x, y, value }]);
     });
 
     // tell the browser don't start to slide yet
@@ -74,23 +69,9 @@ export default function Home() {
     };
   }, [format]);
 
-  const getCanvasCoords = (touch, canvas) => {
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top
-    };
-  };
-  
-
   const drawLine = (x0, y0, x1, y1, emit = true) => {
     const ctx = ctxRef.current;
-    ctx.beginPath();
-    ctx.moveTo(x0, y0);
-    ctx.lineTo(x1, y1);
-    ctx.stroke();
-    ctx.closePath();
-
+    drawLineOnCanvas(ctx, x0, y0, x1, y1);
     if (emit) {
       socket.emit("draw", { x0, y0, x1, y1 });
     }
@@ -99,31 +80,31 @@ export default function Home() {
   const handleMouseDown = (e) => {
     if (mode !== "draw") return;
 
-    isDrawing.current = { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
+    const { x, y } = getCanvasCoords(e.nativeEvent, canvasRef.current);
+    isDrawing.current = { x, y };
   };
 
   const handleMouseMove = (e) => {
     if (mode !== "draw" || !isDrawing.current) return;
-    const x = e.nativeEvent.offsetX;
-    const y = e.nativeEvent.offsetY;
+    const { x, y } = getCanvasCoords(e.nativeEvent, canvasRef.current);
     const { x: prevX, y: prevY } = isDrawing.current;
 
     drawLine(prevX, prevY, x, y, true);
     isDrawing.current = { x, y };
   };
 
+  // TODO: outside our canvas, mouse up doesn't work
   const handleMouseUp = () => {
     isDrawing.current = null;
   };
 
+  
   const handleTouchStart = (e) => {
     if (mode !== "draw") return;
-
     const touch = e.touches[0];
-  
+
     // only response to apple pencil, not finger
     if (touch.touchType !== "stylus") return;
-  
     e.preventDefault(); // disable the default sliding
   
     const { x, y } = getCanvasCoords(touch, canvasRef.current);
@@ -155,26 +136,38 @@ export default function Home() {
 
   const handleCanvasClick = (e) => {
     if (mode !== "text") return; 
-    
-    const canvas = canvasRef.current;
+
     const rect = containerRef.current.getBoundingClientRect();
+    const { x, y } = getCanvasCoords(e.nativeEvent, containerRef.current);
+  
+    const id = Date.now().toString() + "-" + Math.random().toString(36).slice(2, 6);
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-  
-    setTextInput({ x, y, value: "" });
-  
+    const newBox = { id, x, y, value: "" };
+    setTextBoxes([...textBoxes, newBox]);
+    setEditingId(id);
+
+    // after rendering, .focus()
     setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
+        inputRefs.current[id]?.focus();
+      }, 0);
+
+    socket.emit("add-text", newBox);
   };
 
-  const drawText = (x, y, text) => {
-    const ctx = ctxRef.current;
-    ctx.font = "17px Arial";
-    ctx.fillStyle = "black";
-    ctx.fillText(text, x, y);
+
+  const handleTextBoxChange = (id, newValue) => {
+    setTextBoxes(prev =>
+      prev.map(tb => (tb.id === id ? { ...tb, value: newValue } : tb))
+    );
   };
+  
+
+//   const drawText = (x, y, text) => {
+//     const ctx = ctxRef.current;
+//     ctx.font = "17px Arial";
+//     ctx.fillStyle = "black";
+//     ctx.fillText(text, x, y);
+//   };
   
   
   return (
@@ -203,37 +196,35 @@ export default function Home() {
             onClick={handleCanvasClick}
           />
 
-          {textInput && (
+            {textBoxes.map((box) => (
             <input
-              ref={inputRef}
-              value={textInput.value}
-              onChange={(e) =>
-                setTextInput({ ...textInput, value: e.target.value })
-              }
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && textInput.value.trim()) {
-                  drawText(textInput.x, textInput.y, textInput.value);
-                  socket.emit("add-text", {
-                    x: textInput.x,
-                    y: textInput.y,
-                    value: textInput.value
-                  });
-                  setTextInput(null);
+              key={box.id}
+              value={box.value}
+              // dynamic binding : ref takes a callback function, to add box.id : box object key-value pair to our {}
+              ref={(el) => {
+                if (el) inputRefs.current[box.id] = el;
+              }}
+              onChange={(e) => handleTextBoxChange(box.id, e.target.value)}
+              onFocus={() => setEditingId(box.id)}
+              onBlur={() => {
+                if (!box.value.trim()) {
+                  setTextBoxes(prev => prev.filter(tb => tb.id !== box.id));
                 }
+                setEditingId(null);
               }}
               style={{
                 position: "absolute",
-                top: textInput.y - TEXT_OFFSET_Y,
-                left: textInput.x - 2,
+                top: box.y - TEXT_OFFSET_Y,
+                left: box.x - 2,
                 fontSize: `${FONT_SIZE}px`,
                 lineHeight: `${FONT_SIZE}px`,
                 padding: "2px",
-                border: "1px solid #aaa",
+                border: editingId === box.id ? "1px solid blue" : "1px solid transparent",
                 background: "white",
                 zIndex: 15
               }}
             />
-          )}
+          ))}
         </div>
       </div>
     </div>
