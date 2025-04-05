@@ -51,6 +51,12 @@ export default function DrawPanel({ mode }) {
         setTextBoxes(prev =>
           prev.map(tb => (tb.id === id ? { ...tb, value } : tb))
         );
+
+        const el = inputRefs.current[id];
+        if (el && measureRef.current) {
+            measureRef.current.textContent = value || " ";
+            el.style.width = measureRef.current.offsetWidth + 4 + "px";
+        }
       });
 
     socket.on("delete-text", ({ id }) => {
