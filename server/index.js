@@ -1,16 +1,18 @@
-
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 
+require('dotenv').config();
+
 const app = express();
+const LOCAL_IP = process.env.LOCAL_IP;
 app.use(cors()); // Allow frontend to connect from a different port (like 3000)
 
 const server = http.createServer(app); // Create a raw HTTP server
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://10.0.0.230:3000"],// React app runs here
+    origin: [`http://localhost:3000`, `http://${LOCAL_IP}:3000`],// React app runs here
     methods: ["GET", "POST"]
   }
 });
@@ -67,6 +69,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5001, "0.0.0.0", () => {
-  console.log("Server running on http://0.0.0.0:5001");
+server.listen(5001, LOCAL_IP, () => {
+  console.log(`✅ Server running on http://${LOCAL_IP}:5001`);
 });

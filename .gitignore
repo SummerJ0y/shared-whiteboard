@@ -18,5 +18,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env*.local
+# Ignore backend env
+server/.env
+
+# Ignore frontend env
+client/.env.local
