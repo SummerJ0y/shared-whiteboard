@@ -14,12 +14,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
-        <PageContextProvider>
-          <div className={styles.mainContainer}>
+      <body className={styles.mainContainer}>
+        <PageContextProvider>          
             <Header />
-            <main className={styles.whiteboard}>{children}</main>
-          </div>
+            <main className={styles.whiteboard}>{children}</main>          
         </PageContextProvider>
       </body>
     </html>
