@@ -1,9 +1,11 @@
 .row {
   display: flex;  
   flex-direction: row;
-  border: 1px solid black;
+  border: none;
+  background-color: var(--gray-ladder1);
   border-radius: 20px;
-  padding: 5px;
+  padding: 4px 6px;
+  margin: 10px;
   overflow: hidden;
 }
 
@@ -18,10 +20,11 @@
 .middleSection{
   display: flex; 
   flex-direction: column;
-  border: 1px solid lightgray;
+  /* border: 1px solid lightgray; */
   flex: 1;
   height: 100%;
   background-color: transparent;
+  overflow: hidden;
 }
   
 .rightSection{
@@ -35,12 +38,12 @@
 
 /* round corner square button */
 .buttonType1 {
-  background-color: var(--lightBlue);
+  background-color: var(--gray-ladder2);
   border: none;
   border-radius: 15px;
   width: 50px;
   height: auto;
-  padding: 7px 10px 7px 10px;
+  padding: 4px 10px 7px 10px;
   transition: background-color 0.3s;
   color: black;
   white-space: nowrap;

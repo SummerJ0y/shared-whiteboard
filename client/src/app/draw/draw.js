@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePageContext } from "../context/PageContext";
 import socket from "../utils/socket";
 import { getCanvasCoords, drawLineOnCanvas } from "../utils/canvasUtils";
-import "./draw.css";
+import styles from './draw.module.css'
 
 // drawMode: "draw" or "text" on canvas
 export default function DrawPanel() {
@@ -178,12 +178,10 @@ export default function DrawPanel() {
   };
 
   return (
-    <div className="canvas-container" ref={containerRef}>
+    <div className={styles.canvasContainer} ref={containerRef}>
       <canvas
         ref={canvasRef}
-        width={674}
-        height={953}
-        className="drawing-canvas"
+        className={styles.drawingCanvas}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

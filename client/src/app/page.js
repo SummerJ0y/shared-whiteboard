@@ -12,7 +12,7 @@ export default function Home() {
           <Panel defaultSize={50}>
             <div className={styles.grid}>
               <TextToolBar />
-              <div className={styles.canvasContainer}>
+              <div className={styles.canvasContainer} style={{borderRight: '1px solid lightgray'}}>
                 <div style={{ margin: "auto", display: "flex", flexDirection: "column" }}>
                   <div className={styles.canvasText}></div> {/* text canvas here */}
                 </div>
@@ -23,7 +23,7 @@ export default function Home() {
           <Panel defaultSize={50}>
             <div className={styles.grid}>
               <DrawToolBar />
-              <div className={styles.canvasContainer}>
+              <div className={styles.canvasContainer} style={{borderLeft: '1px solid lightgray'}}>
                 <div style={{ margin: "auto", display: "flex", flexDirection: "column" }}>
                   <DrawPanel />
                 </div>

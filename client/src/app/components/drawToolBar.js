@@ -12,7 +12,7 @@ export default function DrawToolBar() {
                 color thickness opacity
             </div>
             <div className={styles.rightSection}>
-                <button className={styles.buttonType1} style={{ marginRight: '10px' }} onClick={() => setDrawMode("text")}>Text</button>
+                <button className={styles.buttonType1} style={{ marginRight: '5px' }} onClick={() => setDrawMode("text")}>Text</button>
                 <button className={styles.buttonType1} onClick={() => setDrawMode("draw")}>Draw</button>
             </div>
         </div>

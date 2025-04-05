@@ -1,0 +1,14 @@
+.canvasContainer {
+    background-color: var(--background-color);
+    padding: 30px 25px;
+    position: relative;
+  }
+  
+  .drawingCanvas {
+    width: 674px;
+    height: 953px;
+    border: 1px solid #ccc;
+    background-color: white;
+    display: block;
+    margin: 0 auto;
+  }

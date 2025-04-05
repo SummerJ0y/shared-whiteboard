@@ -1,6 +1,8 @@
 :root {
   /* --background-color: #f9fbfd; google doc's bg color */
   --background-color: #f9fbfd; /* bg color for test */
+  --gray-ladder1: #D3E1F0;
+  --gray-ladder2: #ADC7E3;
   --lightBlue: #b9e3ff;
 }
 
@@ -14,5 +16,6 @@ body, html {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  user-select: none;
 }
  

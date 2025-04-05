@@ -13,8 +13,8 @@ export default function Header() {
                 <div className={styles.leftSection1}>
                     <Image
                      src="/favicon.ico"
-                     width={80}
-                     height={80}
+                     width={70}
+                     height={70}
                      alt="logo"
                      priority
                     />

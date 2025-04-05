@@ -1,9 +1,11 @@
 .row {
   display: flex;  
   flex-direction: row;
-  border: 1px solid black;
+  border: none;
+  background-color: var(--gray-ladder1);
   border-radius: 20px;
-  padding: 5px;
+  padding: 4px 6px;
+  margin: 10px;
   overflow: hidden;
 }
 
@@ -18,10 +20,11 @@
 .middleSection{
   display: flex; 
   flex-direction: column;
-  border: 1px solid lightgray;
+  /* border: 1px solid lightgray; */
   flex: 1;
   height: 100%;
   background-color: transparent;
+  overflow: hidden;
 }
 
 .rightSection{

@@ -2,7 +2,7 @@
   background-color: var(--background-color);
   border-bottom: solid;
   border-bottom-width: 1px;
-  border-color: black;
+  border-color: gray;
   overflow: hidden;
 }
 
@@ -11,10 +11,10 @@
   justify-content: center;
   align-items: center;
   flex-direction: row;
-  height: 100px;
+  height: 90px;
   width: 100%;
   border: none; 
-  padding: 15px;
+  padding: 10px;
   margin-bottom: 5px;
 }
 
@@ -23,8 +23,8 @@
   justify-content: center;
   align-items: center;
   border-radius: 20px;
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background-color: var(--background-color);
   margin-right: 10px;
   overflow: hidden;
@@ -98,12 +98,12 @@
 }
 
 .shareButton {
-  width: 40px;
+  width: 70px;
   background-color: var(--lightBlue);
   color: black;
-  padding: 10px 20px 12px 18px;  
+  padding: 10px 18px 12px 18px;  
   border-radius: 25px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -146,6 +146,7 @@
   width: 40px;
   height: 40px;
   background-color: transparent;
+  margin-left: 10px;
 }
 
 /* ------------------- styles for button ---------------------- */
