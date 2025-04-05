@@ -3,12 +3,9 @@
   border-bottom: solid;
   border-bottom-width: 1px;
   border-color: black;
-  height: 170px;
-  width: 100%;
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
-/* ------------------- first row of the header ---------------------- */
 .row1 {
   display: flex;  
   justify-content: center;
@@ -19,7 +16,6 @@
   border: none; 
   padding: 15px;
   margin-bottom: 5px;
-  box-sizing: border-box;
 }
 
 .leftSection1 {
@@ -49,7 +45,7 @@
   justify-content: right;
   align-items: center;
   height: 100%;
-  width: 160px;
+  width: 250px;
   background-color: transparent;
 }
 
@@ -69,6 +65,36 @@
   border: none;
   height: 40%;
   width: 100%;
+}
+
+.online {
+  display: flex;
+  flex-direction: row;
+  color: green;
+  font-size: 15px;
+  margin-right: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.online:active {
+  opacity: 0.6;
+}
+
+.onlinePannel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: fixed;
+  top: 85px;
+  right: 85px;
+  width: 150px;
+  height: 150px;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 20px;
+  z-index: 100;
+  overflow-y: auto;
 }
 
 .shareButton {
@@ -93,6 +119,23 @@
   opacity: 0.6;
 }
 
+.shareWindow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: fixed;
+  top: 150px;
+  right: 32%;
+  width: 33%;
+  min-width: 300px;
+  height: 400px;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 20px;
+  z-index: 100;
+  overflow-y: auto;
+}
+
 .userIcon {
   display: flex;
   justify-content: center;
@@ -100,58 +143,30 @@
   display: block;
   border: 1px solid gray;
   border-radius: 100px;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   background-color: transparent;
-}
-/* ------------------- second row of the header ---------------------- */
-.row2 {
-  display: flex;  
-  flex-direction: row;
-  height: 50px;
-  width: 100%;
-  border: 1px solid black;
-  padding: 5px;
-  box-sizing: border-box;
-}
-
-.leftSection2 {
-  display: flex; 
-  flex: 1;
-  border: none;
-  height: 100%;
-  background-color: white;
-}
-
-.middleSection2ForText{
-  display: flex; 
-  flex-direction: column;
-  border: 1px solid lightgray;
-  flex: 1;
-  height: 100%;
-  background-color: white;
-}
-
-.middleSection2ForDraw{
-  display: flex; 
-  flex-direction: column;
-  border: 1px solid lightgray;
-  flex: 1;
-  height: 100%;
-  background-color: white;
-}
-  
-.rightSection2{
-  display: flex; 
-  justify-content: right;
-  border: none;
-  height: 100%;
-  width: 140px;
-  background-color: white;
 }
 
 /* ------------------- styles for button ---------------------- */
 
+/* text only clickable "button" */
+.buttonType0 {
+  border: none;
+  background-color: transparent;
+  user-select: none;
+  cursor: pointer;
+  margin-right: 15px;
+}
+.buttonType0:hover {
+  scale: 1.1;
+  text-decoration-line: underline;
+}
+.buttonType0:active {
+  opacity: 0.6;
+}
+
+/* round corner square button */
 .buttonType1 {
   background-color: var(--lightBlue);
   border: none;

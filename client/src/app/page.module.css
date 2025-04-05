@@ -1,18 +1,44 @@
 .main {
   background-color: var(--background-color);
+  width: 100%;
+  height: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-rows: 50px 1fr;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 
 .canvasContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width:100%;
+  height:100%;
   background-color: var(--background-color);
-  padding: 30px 25px 30px 25px;
+  border: 1px solid lightgray;
+  overflow: auto;
+  scrollbar-gutter: stable; /* keeps space for scrollbar even when it's not shown */
 }
 
-.drawingCanvas {
-  /* A3 paper ratio as the default*/
-  width: 953px;
-  height: 674px;
-  border: 1px solid red;
-  background-color: white;
-  margin: 0 auto;
-  display: block;
+.canvasText{
+  display: flex;
+  width: 480px;
+  height: 500px;
+  background-color: red;
+  border: 1px solid yellow;
+  flex-shrink: 0;
+}
+
+.canvasDraw{
+  display: flex;
+  width: 480px;
+  height: 500px;
+  background-color: aqua;
+  border: 1px solid yellow;
+  flex-shrink: 0;
 }

@@ -48,6 +48,20 @@ io.on("connection", (socket) => {
     }
   });  
 
+  socket.on("update-text", (data) => {
+    if (currentCanvas) {
+      socket.to(currentCanvas).emit("update-text", data);
+      console.log(`[Server] update-text from ${socket.id}:`, data);
+    }
+  });
+  
+  socket.on("delete-text", ({ id }) => {
+    if (currentCanvas) {
+      socket.to(currentCanvas).emit("delete-text", { id });
+      console.log(`[Server] delete-text from ${socket.id}:`, id);
+    }
+  });  
+
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });

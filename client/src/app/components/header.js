@@ -1,10 +1,12 @@
 "use client"
+import { useState } from "react";
 import Image from 'next/image';
 import { usePageContext } from '../context/PageContext';
 import styles from './header.module.css';
 
 export default function Header() {
-    const { mode, setMode, setFormat } = usePageContext();
+    const [onlineToggle, setOnlineToggle] = useState(false);
+    const [shareWindow, setShareWindow] = useState(false);
     return (
         <div className={styles.headerOuterBox}>
             <div className={styles.row1}>
@@ -14,43 +16,44 @@ export default function Header() {
                      width={80}
                      height={80}
                      alt="logo"
-                     />
+                     priority
+                    />
                 </div>
                 <div className={styles.middleSection1}>
                     <div className={styles.fileNameBox}>
                         Sample Doc Name
                     </div>
                     <div className={styles.docMenuBar}>
-                        File  Edit  View  Insert  Format  Tools  Extensions Help
+                        <div className={styles.buttonType0} onClick={() => console.log("File clicked")} >File</div>
+                        <div className={styles.buttonType0} onClick={() => console.log("Edit clicked")} >Edit</div>
+                        <div className={styles.buttonType0} onClick={() => console.log("View clicked")} >View</div>
+                        <div className={styles.buttonType0} onClick={() => console.log("Insert clicked")} >Insert</div>
+                        <div className={styles.buttonType0} onClick={() => console.log("Format clicked")} >Format</div>
+                        <div className={styles.buttonType0} onClick={() => console.log("Tools clicked")} >Tools</div>
+                        <div className={styles.buttonType0} onClick={() => console.log("Extensions clicked")} >Extensions</div>
+                        <div className={styles.buttonType0} onClick={() => console.log("Help clicked")} >Help</div>
                     </div>
                 </div>
                 <div className={styles.rightSection1}>
-                    <div className={styles.shareButton}>
-                        Share
+                    <div className={styles.online} onClick={() => setOnlineToggle(!onlineToggle)}>8 online</div>
+                    {onlineToggle && (
+                        <div className={styles.onlinePannel}>
+                            <ul>Yingjia Liu</ul>
+                            <ul>Xin Xia</ul>
+                            <ul>Yingjia Liu2</ul>
+                            <ul>Yingjia Liu3</ul>
+                            <ul>Yingjia Liu4</ul>
+                            <ul>Yingjia Liu5</ul>
+                            <ul>Yingjia Liu6</ul>
+                            <ul>Yingjia Liu7</ul>
+                        </div>
+                    )}
+                    <div className={styles.shareButton} onClick={() => setShareWindow(!shareWindow)}>Share</div>
+                    {shareWindow && (
+                        <div className={styles.shareWindow}> </div>
+                    )}
+                    <div className={styles.userIcon} style={{ marginLeft: '10px' }}>                       
                     </div>
-                    <div className={styles.userIcon} style={{ marginLeft: '10px' }}>
-                        
-                    </div>
-                </div>
-            </div>
-            <div className={styles.row2}>
-                <div className={styles.leftSection2}>
-                    undo  redo print  100%    
-                    <button onClick={() => setFormat("landscape")}>Landscape</button>
-                    <button onClick={() => setFormat("portrait")}>Portrait</button>
-                </div>
-                {mode === "text" ? (
-                    <div className={styles.middleSection2ForText}>
-                        Normal Text  Arial    - 12 +   B   I  U  color
-                    </div>
-                ) : (
-                    <div className={styles.middleSection2ForDraw}>
-                        color thickness opacity
-                    </div>
-                )}
-                <div className={styles.rightSection2}>
-                    <button className={styles.buttonType1} style={{ marginRight: '10px' }} onClick={() => setMode("text")}>Text</button>
-                    <button className={styles.buttonType1} onClick={() => setMode("draw")}>Draw</button>
                 </div>
             </div>
         </div>
