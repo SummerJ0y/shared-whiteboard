@@ -1,11 +1,14 @@
 // draw.js
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePageContext } from "../context/PageContext";
 import socket from "../utils/socket";
 import { getCanvasCoords, drawLineOnCanvas } from "../utils/canvasUtils";
 import "./draw.css";
 
-// mode: "draw" or "text" on canvas
-export default function DrawPanel({ mode }) {
+// drawMode: "draw" or "text" on canvas
+export default function DrawPanel() {
+  const { drawMode } = usePageContext();
+
   const FONT_SIZE = 16;
   const TEXT_OFFSET_Y = 17;
 
@@ -96,13 +99,13 @@ export default function DrawPanel({ mode }) {
   };
 
   const handleMouseDown = (e) => {
-    if (mode !== "draw") return;
+    if (drawMode !== "draw") return;
     const { x, y } = getCanvasCoords(e.nativeEvent, canvasRef.current);
     isDrawing.current = { x, y };
   };
 
   const handleMouseMove = (e) => {
-    if (mode !== "draw" || !isDrawing.current) return;
+    if (drawMode !== "draw" || !isDrawing.current) return;
     const { x, y } = getCanvasCoords(e.nativeEvent, canvasRef.current);
     const { x: prevX, y: prevY } = isDrawing.current;
     drawLine(prevX, prevY, x, y, true);
@@ -114,7 +117,7 @@ export default function DrawPanel({ mode }) {
   };
 
   const handleTouchStart = (e) => {
-    if (mode !== "draw") return;
+    if (drawMode !== "draw") return;
     const touch = e.touches[0];
     if (touch.touchType !== "stylus") return;
     e.preventDefault();
@@ -123,7 +126,7 @@ export default function DrawPanel({ mode }) {
   };
 
   const handleTouchMove = (e) => {
-    if (mode !== "draw") return;
+    if (drawMode !== "draw") return;
     const touch = e.touches[0];
     if (touch.touchType !== "stylus" || !isDrawing.current) return;
     e.preventDefault();
@@ -141,7 +144,7 @@ export default function DrawPanel({ mode }) {
   };
 
   const handleCanvasClick = (e) => {
-    if (mode !== "text") return;
+    if (drawMode !== "text") return;
     const { x, y } = getCanvasCoords(e.nativeEvent, containerRef.current);
     const id = Date.now().toString() + "-" + Math.random().toString(36).slice(2, 6);
     const newBox = { id, x, y, value: "" };

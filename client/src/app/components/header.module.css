@@ -166,23 +166,4 @@
   opacity: 0.6;
 }
 
-/* round corner square button */
-.buttonType1 {
-  background-color: var(--lightBlue);
-  border: none;
-  border-radius: 15px;
-  width: 50px;
-  height: auto;
-  padding: 7px 10px 7px 10px;
-  transition: background-color 0.3s;
-  color: black;
-  white-space: nowrap;
-  user-select: none;
-  cursor: pointer;
-}
-.buttonType1:hover {
-  scale: 1.05;
-}
-.buttonType1:active {
-  opacity: 0.6;
-}
+

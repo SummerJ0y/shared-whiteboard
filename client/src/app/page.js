@@ -1,5 +1,6 @@
 "use client";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import DrawPanel from "./draw/draw";
 import DrawToolBar from "./components/drawToolBar";
 import TextToolBar from "./components/textToolBar";
 import styles from "./page.module.css";
@@ -11,8 +12,10 @@ export default function Home() {
           <Panel defaultSize={50}>
             <div className={styles.grid}>
               <TextToolBar />
-              <div className={styles.canvasContainer} style={{overflow: "auto"}}>
-                <div className={styles.canvasText}></div> {/* text canvas here */}
+              <div className={styles.canvasContainer}>
+                <div style={{ margin: "auto", display: "flex", flexDirection: "column" }}>
+                  <div className={styles.canvasText}></div> {/* text canvas here */}
+                </div>
               </div>      
             </div>
           </Panel>
@@ -20,8 +23,10 @@ export default function Home() {
           <Panel defaultSize={50}>
             <div className={styles.grid}>
               <DrawToolBar />
-              <div className={styles.canvasContainer} style={{overflow: "auto"}}>
-                  <div className={styles.canvasDraw}></div> {/* draw canvas here */}
+              <div className={styles.canvasContainer}>
+                <div style={{ margin: "auto", display: "flex", flexDirection: "column" }}>
+                  <DrawPanel />
+                </div>
               </div>
             </div>
           </Panel>      

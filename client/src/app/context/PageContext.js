@@ -5,10 +5,9 @@ import { createContext, useContext, useState } from "react";
 const PageContext = createContext();
 
 export const PageContextProvider = ({ children }) => {
-  const [mode, setMode] = useState("draw");
-  const [format, setFormat] = useState("landscape");
+  const [drawMode, setDrawMode] = useState("draw");
   return (
-    <PageContext.Provider value={{ mode, setMode, format, setFormat }}>
+    <PageContext.Provider value={{ drawMode, setDrawMode }}>
       {children}
     </PageContext.Provider>
   );
