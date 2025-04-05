@@ -15,6 +15,7 @@ export default function DrawPanel({ mode }) {
   const ctxRef = useRef(null); // pen
   const isDrawing = useRef(false);
   const inputRefs = useRef({}); // key-value pair: box.id -> box object
+  const measureRef = useRef(null); // hidden span to measure the width of text box
 
   // for text
   const [textBoxes, setTextBoxes] = useState([]); // { id, x, y, value }
@@ -65,6 +66,8 @@ export default function DrawPanel({ mode }) {
     canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
     canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
 
+    window.addEventListener("mouseup", handleMouseUp);
+
     return () => {
       socket.off("draw");
       socket.off("add-text");
@@ -73,6 +76,7 @@ export default function DrawPanel({ mode }) {
       canvas.removeEventListener("touchstart", handleTouchStart);
       canvas.removeEventListener("touchmove", handleTouchMove);
       canvas.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("mouseup", handleMouseUp);
       socket.disconnect();
     };
   }, []);
@@ -99,7 +103,6 @@ export default function DrawPanel({ mode }) {
     isDrawing.current = { x, y };
   };
 
-  // TODO: outside our canvas, mouse up doesn't work
   const handleMouseUp = () => {
     isDrawing.current = null;
   };
@@ -140,16 +143,29 @@ export default function DrawPanel({ mode }) {
     setEditingId(id);
     // after rendering, .focus()
     setTimeout(() => {
-      inputRefs.current[id]?.focus();
+        const el = inputRefs.current[id];
+        if (el && measureRef.current) {
+            measureRef.current.textContent = "";
+            el.style.width = measureRef.current.offsetWidth + 4 + "px";
+            el.focus();
+        }
     }, 0);
     socket.emit("add-text", newBox);
   };
 
   const handleTextBoxChange = (id, newValue) => {
+    if (newValue.length > 40) return;
+
     setTextBoxes(prev =>
       prev.map(tb => (tb.id === id ? { ...tb, value: newValue } : tb))
     );
     socket.emit("update-text", { id, value: newValue });
+
+    const el = inputRefs.current[id];
+    if (el && measureRef.current) {
+        measureRef.current.textContent = newValue || " "; 
+        el.style.width = measureRef.current.offsetWidth + 4 + "px";
+    }
   };
 
   return (
@@ -168,10 +184,22 @@ export default function DrawPanel({ mode }) {
         onClick={handleCanvasClick}
       />
 
+    <span
+        ref={measureRef}
+        style={{
+          position: "absolute",
+          visibility: "hidden",
+          whiteSpace: "pre",
+          fontSize: `${FONT_SIZE}px`,
+          fontFamily: "Arial"
+        }}
+    />
+
       {textBoxes.map((box) => (
         <input
           key={box.id}
           value={box.value}
+          type="text"
           // dynamic binding : ref takes a callback function, to add box.id : box object key-value pair to our {}
           ref={(el) => {
             if (el) inputRefs.current[box.id] = el;
@@ -187,13 +215,14 @@ export default function DrawPanel({ mode }) {
           }}
           style={{
             position: "absolute",
+            width: "10px",
             top: box.y - TEXT_OFFSET_Y,
             left: box.x - 2,
             fontSize: `${FONT_SIZE}px`,
             lineHeight: `${FONT_SIZE}px`,
             padding: "2px",
             border: editingId === box.id ? "1px solid blue" : "1px solid transparent",
-            background: "white",
+            background: "transparent",
             zIndex: 15
           }}
         />
