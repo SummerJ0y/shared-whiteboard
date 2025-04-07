@@ -2,12 +2,19 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const { v4: uuidv4 } = require("uuid");
 
 require('dotenv').config();
 
 const app = express();
 const LOCAL_IP = process.env.LOCAL_IP;
+const PORT = process.env.PORT || 5001;
 app.use(cors()); // Allow frontend to connect from a different port (like 3000)
+
+app.get("/create-canvas", (req, res) => {
+  const newCanvasId = uuidv4(); // generate a new session ID
+  res.json({ canvasId: newCanvasId });
+});
 
 const server = http.createServer(app); // Create a raw HTTP server
 const io = new Server(server, {
@@ -69,6 +76,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5001, LOCAL_IP, () => {
-  console.log(`✅ Server running on http://${LOCAL_IP}:5001`);
+server.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
