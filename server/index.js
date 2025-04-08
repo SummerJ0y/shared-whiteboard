@@ -7,7 +7,6 @@ const { v4: uuidv4 } = require("uuid");
 require('dotenv').config();
 
 const app = express();
-const LOCAL_IP = process.env.LOCAL_IP;
 const PORT = process.env.PORT || 5001;
 app.use(cors()); // Allow frontend to connect from a different port (like 3000)
 
