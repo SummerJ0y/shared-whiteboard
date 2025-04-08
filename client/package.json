@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
+    "dev:deployed-backend": "HOST=192.168.4.92 dotenv -e .env.deployed-backend.local -- next dev --hostname 192.168.4.92",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -14,5 +15,8 @@
     "react-dom": "^19.0.0",
     "react-resizable-panels": "^2.1.7",
     "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^8.0.0"
   }
 }

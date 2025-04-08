@@ -26,8 +26,6 @@ export default function DrawPanel() {
   const [editingId, setEditingId] = useState(null); // box id in editting state
 
   useEffect(() => {
-    // TODO: generate url
-    // const canvasId = new URLSearchParams(window.location.search).get("canvas") || "default";
     socket.emit("join-canvas", canvasId);
 
     const canvas = canvasRef.current;

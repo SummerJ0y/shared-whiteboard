@@ -16,9 +16,25 @@ app.get("/create-canvas", (req, res) => {
 });
 
 const server = http.createServer(app); // Create a raw HTTP server
+
+const LOCAL_FRONTEND1 = 'http://192.168.4.92:3000';
+const LOCAL_FRONTEND2 = 'http://10.0.0.230:3000';
+
+const allowedOrigins = [
+  LOCAL_FRONTEND1,
+  LOCAL_FRONTEND2,
+  'https://shared-whiteboard.vercel.app',
+];
+
+// const LOCAL_IP = process.env.LOCAL_IP;
+
+// const allowedOrigins = process.env.ENV === 'local'
+//   ? [`http://${LOCAL_IP}:3000`]
+//   : ['https://shared-whiteboard.vercel.app', ``,];
+
 const io = new Server(server, {
   cors: {
-    origin: [`http://localhost:3000`, `https://shared-whiteboard.vercel.app`],// React app runs here
+    origin: allowedOrigins,
     methods: ["GET", "POST"]
   }
 });
@@ -28,7 +44,7 @@ io.on("connection", (socket) => {
   let currentCanvas = null;
   // Debug all events received from this client
   socket.onAny((event, ...args) => {
-    console.log(`[Server] Socket ${socket.id} sent event: ${event}`, args);
+    // console.log(`[Server] Socket ${socket.id} sent event: ${event}`, args);
   });
 
   socket.on("join-canvas", (canvasId) => {
@@ -75,6 +91,8 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+
+const HOST = process.env.ENV === 'local' ? process.env.LOCAL_IP : '0.0.0.0';
+server.listen(PORT, HOST, () => {
+  console.log(`✅ Server running at http://${HOST}:${PORT}`);
 });
