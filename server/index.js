@@ -18,7 +18,7 @@ app.get("/create-canvas", (req, res) => {
 const server = http.createServer(app); // Create a raw HTTP server
 const io = new Server(server, {
   cors: {
-    origin: [`http://localhost:3000`, `http://${LOCAL_IP}:3000`, `https://shared-whiteboard.vercel.app`],// React app runs here
+    origin: [`http://localhost:3000`, `https://shared-whiteboard.vercel.app`],// React app runs here
     methods: ["GET", "POST"]
   }
 });
