@@ -1,5 +1,6 @@
 // draw.js
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 import { usePageContext } from "../context/PageContext";
 import socket from "../utils/socket";
 import { getCanvasCoords, drawLineOnCanvas } from "../utils/canvasUtils";
@@ -8,7 +9,7 @@ import styles from './draw.module.css'
 // drawMode: "draw" or "text" on canvas
 export default function DrawPanel() {
   const { drawMode } = usePageContext();
-
+  const { canvasId } = useParams();
   const FONT_SIZE = 16;
   const TEXT_OFFSET_Y = 17;
 
@@ -26,7 +27,7 @@ export default function DrawPanel() {
 
   useEffect(() => {
     // TODO: generate url
-    const canvasId = new URLSearchParams(window.location.search).get("canvas") || "default";
+    // const canvasId = new URLSearchParams(window.location.search).get("canvas") || "default";
     socket.emit("join-canvas", canvasId);
 
     const canvas = canvasRef.current;
