@@ -57,7 +57,7 @@ export default function DrawPanel() {
         const el = inputRefs.current[id];
         if (el && measureRef.current) {
             measureRef.current.textContent = value || " ";
-            el.style.width = measureRef.current.offsetWidth + 4 + "px";
+            el.style.width = measureRef.current.offsetWidth + 6 + "px";
         }
       });
 
