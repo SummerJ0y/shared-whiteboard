@@ -4,11 +4,20 @@
     position: relative;
   }
   
-  .drawingCanvas {
+  .liveCanvas {
+    position: absolute;
     width: 674px;
     height: 953px;
-    border: 1px solid #ccc;
+    border: 1px solid white;
+    background-color: transparent;
+    margin: 0 auto;
+    z-index: 100;
+  }
+
+  .staticCanvas {
+    width: 674px;
+    height: 953px;
+    border: 1px solid black;
     background-color: white;
-    display: block;
     margin: 0 auto;
   }

@@ -239,8 +239,8 @@ export default function DrawPanel() {
     <div className={styles.canvasContainer} ref={containerRef}>
         <canvas
             ref={liveCanvasRef}
-            className={styles.drawingCanvas}
-            style={{zIndex: 1, backgroundColor: "transparent" }}
+            className={styles.liveCanvas}
+            // style={{zIndex: 1, backgroundColor: "transparent" }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -251,8 +251,8 @@ export default function DrawPanel() {
         />
       <canvas
             ref={staticCanvasRef}
-            className={styles.drawingCanvas}
-            style={{zIndex: 0 }}
+            className={styles.staticCanvas}
+            // style={{zIndex: 0 }}
         />
 
     <span
