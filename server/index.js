@@ -58,12 +58,18 @@ io.on("connection", (socket) => {
     console.log(`Socket ${socket.id} joined canvas ${canvasId}`);
   });
 
-  socket.on("draw", (data) => {
+  socket.on("draw-segment", (data) => {
     if (currentCanvas) {
       // Send to all others in the same canvas
-      socket.to(currentCanvas).emit("draw", data);
+      socket.to(currentCanvas).emit("draw-segment", data);
     }
   });
+
+  socket.on("draw-stroke", (stroke) => {
+    if (currentCanvas) {
+      socket.to(currentCanvas).emit("draw-stroke", stroke);
+    }
+  });  
 
   socket.on("add-text", (data) => {
     if (currentCanvas) {

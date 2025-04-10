@@ -1,4 +1,5 @@
 // utils/canvasUtils.js
+import getStroke from "perfect-freehand";
 
 export function getCanvasCoords(pointer, canvas) {
     const rect = canvas.getBoundingClientRect();
@@ -9,10 +10,51 @@ export function getCanvasCoords(pointer, canvas) {
   }
 
 
-export function drawLineOnCanvas(ctx, x0, y0, x1, y1) {
+export function drawRawLine(ctx, x0, y0, x1, y1) {
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
     ctx.stroke();
     ctx.closePath();
 }
+
+// const myStroke = {
+//     id: "123", 
+//     color: "black",
+//     size: 4,
+//     tool: "pen",
+//     points: [ [x1, y1], [x2, y2], [x3, y3], ... ]
+//   }
+  
+// const strokes = [stroke1, stroke2, stroke3, stroke4, stroke5];
+
+
+export function drawStroke(ctx, stroke) {
+    const path = getStroke(stroke.points, {
+      size: stroke.size,
+      thinning: 0.6,
+      smoothing: 0.5,
+      streamline: 0.5,
+    });
+  
+    if (path.length < 2) return;
+  
+    ctx.beginPath();
+    ctx.moveTo(...path[0]);
+    for (let i = 1; i < path.length; i++) {
+      ctx.lineTo(...path[i]);
+    }
+  
+    ctx.strokeStyle = stroke.color;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.fillStyle = stroke.color || 'black';
+    ctx.fill();
+  }
+
+  export function redrawCanvas(ctx, strokes) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    strokes.forEach((stroke) => {
+      drawStroke(ctx, stroke);
+    });
+  }
