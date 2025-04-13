@@ -40,7 +40,7 @@ export default function SharePopup({ setShareWindow }) {
                 <div style={{fontSize: '18px', marginTop: '40px'}}>General Access Setting</div>
                                 
                 <div style={{ display: 'flex', alignItems: 'center', marginTop: '15px', width: '90%' }}>
-                    <span style={{ marginRight: '10px', fontSize: '16px' }}>People with the link can:</span>
+                    <span style={{ marginRight: '10px', fontSize: '16px' }}>Anyone with the link</span>
                     <select style={{ flexGrow: 1, padding: '6px', borderRadius: '5px', fontSize: '16px' }}>
                         <option>Can only view</option>
                         <option>Can View and edit</option>                        
@@ -49,7 +49,7 @@ export default function SharePopup({ setShareWindow }) {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', width: '90%' }}>
-                    <span style={{ marginRight: '10px', fontSize: '16px' }}>Authorized user can:</span>
+                    <span style={{ marginRight: '10px', fontSize: '16px' }}>Authorized users</span>
                     <select style={{ flexGrow: 1, padding: '6px', borderRadius: '5px', fontSize: '16px' }}>
                         <option>Can only view</option>
                         <option>Can view and edit</option>
