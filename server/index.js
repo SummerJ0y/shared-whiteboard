@@ -17,7 +17,7 @@ app.get("/create-canvas", (req, res) => {
 
 const server = http.createServer(app); // Create a raw HTTP server
 
-const LOCAL_FRONTEND1 = 'http://192.168.4.92:3000';
+const LOCAL_FRONTEND1 = 'http://10.0.0.207:3000';
 const LOCAL_FRONTEND2 = 'http://10.0.0.230:3000';
 
 const allowedOrigins = [
