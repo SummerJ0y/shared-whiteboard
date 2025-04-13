@@ -1,6 +1,4 @@
 "use client";
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation"; // for App Router
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import DrawPanel from "../../draw/draw";
 import DrawToolBar from "../../components/drawToolBar";
