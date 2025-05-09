@@ -71,6 +71,12 @@ io.on("connection", (socket) => {
     }
   });  
 
+  socket.on("clear-live-canvas", () => {
+    if (currentCanvas) {
+      socket.to(currentCanvas).emit("clear-live-canvas");
+    }
+  });  
+
   socket.on("add-text", (data) => {
     if (currentCanvas) {
       socket.to(currentCanvas).emit("add-text", data);

@@ -50,7 +50,7 @@ export default function DrawPanel() {
 
     liveCtx.lineCap = staticCtx.lineCap = "round";
     liveCtx.strokeStyle = staticCtx.strokeStyle = "black";
-    liveCtx.lineWidth = staticCtx.lineWidth = 3;
+    liveCtx.lineWidth = staticCtx.lineWidth = 2;
     ctxRef.current = { live: liveCtx, static: staticCtx };
 
     if (ctxRef.current.static) {
@@ -92,6 +92,10 @@ export default function DrawPanel() {
         drawStroke(ctxRef.current.static, stroke);
     });
 
+    socket.on("clear-live-canvas", () => {
+      clearLiveCanvas();
+    });    
+
     // tell the browser don't start to slide yet
     liveCanvas.addEventListener("touchstart", handleTouchStart, { passive: false });
     liveCanvas.addEventListener("touchmove", handleTouchMove, { passive: false });
@@ -102,6 +106,7 @@ export default function DrawPanel() {
     return () => {
       socket.off("draw-segment");
       socket.off("draw-stroke");
+      socket.off("clear-live-canvas");
       socket.off("add-text");
       socket.off("update-text");
       socket.off("delete-text");
@@ -126,6 +131,13 @@ export default function DrawPanel() {
       socket.emit("draw-segment", { x0, y0, x1, y1 });
     }
   };
+
+  function clearLiveCanvas() {
+    const ctx = ctxRef.current?.live;
+    if (ctx) {
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+  }
 
   const handleMouseDown = (e) => {
     if (drawMode !== "draw") return;
@@ -153,12 +165,13 @@ export default function DrawPanel() {
     const newStroke = {
       id: Date.now().toString(),
       color: "black",
-      size: 4,
+      size: 3,
       points: [...currentPoints.current],
     };
     drawStroke(ctxRef.current.static, newStroke);
     setStrokes(prev => [...prev, newStroke]);
-    ctxRef.current.live.clearRect(0, 0, 674, 953);
+    clearLiveCanvas();
+    socket.emit("clear-live-canvas", { canvasId });
     
     currentPoints.current = [];
     isDrawing.current = false;
