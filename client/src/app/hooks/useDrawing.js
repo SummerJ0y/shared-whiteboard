@@ -35,6 +35,12 @@ export default function useDrawing(drawMode, canvasId) {
     const liveCtx = liveCanvas.getContext("2d");
     const staticCtx = staticCanvas.getContext("2d");
 
+    liveCanvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    liveCanvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    liveCanvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+
+    window.addEventListener("mouseup", handleMouseUp);
+
     liveCtx.lineCap = staticCtx.lineCap = "round";
     liveCtx.strokeStyle = staticCtx.strokeStyle = "black";
     liveCtx.lineWidth = staticCtx.lineWidth = 2;
@@ -61,6 +67,10 @@ export default function useDrawing(drawMode, canvasId) {
       socket.off("draw-segment");
       socket.off("draw-stroke");
       socket.off("clear-live-canvas");
+      liveCanvas.removeEventListener("touchstart", handleTouchStart);
+        liveCanvas.removeEventListener("touchmove", handleTouchMove);
+        liveCanvas.removeEventListener("touchend", handleTouchEnd);
+        window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [canvasId]);
 
@@ -90,7 +100,7 @@ export default function useDrawing(drawMode, canvasId) {
     const newStroke = {
       id: Date.now().toString(),
       color: "black",
-      size: 3,
+      size: 2.5,
       points: [...currentPoints.current],
     };
     drawStroke(ctxRef.current.static, newStroke);
@@ -134,8 +144,8 @@ export default function useDrawing(drawMode, canvasId) {
     const touch = e.changedTouches[0];
     if (touch.touchType !== "stylus") return;
     e.preventDefault();
-    isDrawing.current = false;
     handleMouseUp();
+    isDrawing.current = false;
   };
 
   return {

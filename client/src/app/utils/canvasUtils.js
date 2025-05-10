@@ -68,7 +68,7 @@ export function drawRawLine(ctx, x0, y0, x1, y1) {
       size: stroke.size,
       thinning: 0,
       smoothing: 1,
-      streamline: 0.5,
+      streamline: 0.7,
     });
 
     const pathData = getSvgPathFromStroke(path);
