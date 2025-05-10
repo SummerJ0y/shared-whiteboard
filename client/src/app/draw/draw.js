@@ -12,7 +12,7 @@ import {
 import styles from './draw.module.css'
 
 // drawMode: "draw" or "text" on canvas
-export default function DrawPanel() {
+export default function DrawPanel1() {
   const { drawMode } = usePageContext();
   const { canvasId } = useParams();
   const FONT_SIZE = 16;

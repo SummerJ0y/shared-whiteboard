@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation"; // for App Router
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import DrawPanel from "../../draw/draw";
+import DrawPanel from "../../components/drawPanel";
 import DrawToolBar from "../../components/drawToolBar";
 import TextToolBar from "../../components/textToolBar";
 import styles from "./page.module.css";
