@@ -19,7 +19,7 @@
 
 .middleSection{
   display: flex; 
-  flex-direction: column;
+  flex-direction: row;
   /* border: 1px solid lightgray; */
   flex: 1;
   height: 100%;
@@ -34,4 +34,25 @@
   height: 100%;
   width: 140px;
   background-color: transparent;
+}
+
+/* round corner square button */
+.buttonType1 {
+  background-color: var(--gray-ladder2);
+  border: none;
+  border-radius: 15px;
+  width: 50px;
+  height: auto;
+  padding: 4px 10px 7px 10px;
+  transition: background-color 0.3s;
+  color: black;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+}
+.buttonType1:hover {
+  scale: 1.05;
+}
+.buttonType1:active {
+  opacity: 0.6;
 }
