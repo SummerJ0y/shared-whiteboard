@@ -3,6 +3,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
+const setupDrawingHandlers = require("./socket/drawingHandlers");
+const setupEditorHandlers = require("./socket/editorHandlers");
 
 require('dotenv').config();
 
@@ -17,20 +19,8 @@ app.get("/create-canvas", (req, res) => {
 
 const server = http.createServer(app); // Create a raw HTTP server
 
-const LOCAL_FRONTEND1 = 'http://10.0.0.207:3000';
-const LOCAL_FRONTEND2 = 'http://10.0.0.230:3000';
-
-const allowedOrigins = [
-  LOCAL_FRONTEND1,
-  LOCAL_FRONTEND2,
-  'https://shared-whiteboard.vercel.app',
-];
-
-// const LOCAL_IP = process.env.LOCAL_IP;
-
-// const allowedOrigins = process.env.ENV === 'local'
-//   ? [`http://${LOCAL_IP}:3000`]
-//   : ['https://shared-whiteboard.vercel.app', ``,];
+// load allowed origin from .env
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "").split(",").map(origin => origin.trim());
 
 const io = new Server(server, {
   cors: {
@@ -41,50 +31,15 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
-  let currentCanvas = null;
+  // let currentCanvas = null;
   // Debug all events received from this client
-  socket.onAny((event, ...args) => {
-    // console.log(`[Server] Socket ${socket.id} sent event: ${event}`, args);
-  });
 
-  socket.on("join-canvas", (canvasId) => {
-    // if already in a canvas room, leave it first to avoid being in multiple rooms
-    // can be changed later for more advanced features.
-    if (currentCanvas) {
-      socket.leave(currentCanvas);
-    }
-    socket.join(canvasId);
-    currentCanvas = canvasId;
-    console.log(`Socket ${socket.id} joined canvas ${canvasId}`);
-  });
+  // socket.onAny((event, ...args) => {
+  //   console.log(`[Server] Socket ${socket.id} sent event: ${event}`, args);
+  // });
 
-  socket.on("draw", (data) => {
-    if (currentCanvas) {
-      // Send to all others in the same canvas
-      socket.to(currentCanvas).emit("draw", data);
-    }
-  });
-
-  socket.on("add-text", (data) => {
-    if (currentCanvas) {
-      socket.to(currentCanvas).emit("add-text", data);
-      console.log(`[Server] add-text from ${socket.id}:`, data);
-    }
-  });  
-
-  socket.on("update-text", (data) => {
-    if (currentCanvas) {
-      socket.to(currentCanvas).emit("update-text", data);
-      console.log(`[Server] update-text from ${socket.id}:`, data);
-    }
-  });
-  
-  socket.on("delete-text", ({ id }) => {
-    if (currentCanvas) {
-      socket.to(currentCanvas).emit("delete-text", { id });
-      console.log(`[Server] delete-text from ${socket.id}:`, id);
-    }
-  });  
+  setupDrawingHandlers(socket, io);
+  setupEditorHandlers(socket, io);
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);

@@ -1,12 +1,15 @@
 "use client";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import DrawPanel from "../../draw/draw";
-import DrawToolBar from "../../components/drawToolBar";
-import TextToolBar from "../../components/textToolBar";
+import Tiptap from "@/app/components/tiptap";
+import DrawToolBar from "@/app/components/drawToolBar";
+import TextToolBar from "@/app/components/textToolBar";
+import { EditorProviderWrapper } from "@/app/context/EditorContext";
+import DrawPanel from "@/app/components/drawPanel";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
+    <EditorProviderWrapper>
     <div className={styles.main}>
       <PanelGroup direction="horizontal">
           <Panel defaultSize={50}>
@@ -14,7 +17,7 @@ export default function Home() {
               <TextToolBar />
               <div className={styles.canvasContainer} style={{borderRight: '1px solid lightgray'}}>
                 <div style={{ margin: "auto", display: "flex", flexDirection: "column" }}>
-                  <div className={styles.canvasText}></div> {/* text canvas here */}
+                  <Tiptap /> {/* text canvas here */}
                 </div>
               </div>      
             </div>
@@ -32,5 +35,6 @@ export default function Home() {
           </Panel>      
       </PanelGroup>
     </div>
+    </EditorProviderWrapper>
   );
 }

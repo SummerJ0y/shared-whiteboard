@@ -3,41 +3,59 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { usePageContext } from "../context/PageContext";
 import socket from "../utils/socket";
-import { getCanvasCoords, drawLineOnCanvas } from "../utils/canvasUtils";
+import {
+    getCanvasCoords,
+    drawRawLine,
+    drawStroke,
+    redrawCanvas,
+} from "../utils/canvasUtils";  
 import styles from './draw.module.css'
 
 // drawMode: "draw" or "text" on canvas
-export default function DrawPanel() {
+export default function DrawPanel1() {
   const { drawMode } = usePageContext();
   const { canvasId } = useParams();
   const FONT_SIZE = 16;
   const TEXT_OFFSET_Y = 17;
 
   // for draw
-  const canvasRef = useRef(null);
+  const liveCanvasRef = useRef(null);
+  const staticCanvasRef = useRef(null);
+  const ctxRef = useRef({ live: null, static: null }); // pen
+
   const containerRef = useRef(null); //for locating the text box
-  const ctxRef = useRef(null); // pen
   const isDrawing = useRef(false);
+  const currentPoints = useRef([]); // points in the current stroke
+
+  const [strokes, setStrokes] = useState([]); // all strokes
+
+  // for text
   const inputRefs = useRef({}); // key-value pair: box.id -> box object
   const measureRef = useRef(null); // hidden span to measure the width of text box
 
-  // for text
   const [textBoxes, setTextBoxes] = useState([]); // { id, x, y, value }
   const [editingId, setEditingId] = useState(null); // box id in editting state
 
   useEffect(() => {
     socket.emit("join-canvas", canvasId);
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const liveCanvas = liveCanvasRef.current;
+    const staticCanvas = staticCanvasRef.current;
 
-    canvas.width = 674;
-    canvas.height = 953;
+    liveCanvas.width = staticCanvas.width = 674;
+    liveCanvas.height = staticCanvas.height = 953;
 
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 3;
-    ctxRef.current = ctx;
+    const liveCtx = liveCanvas.getContext("2d");
+    const staticCtx = staticCanvas.getContext("2d");
+
+    liveCtx.lineCap = staticCtx.lineCap = "round";
+    liveCtx.strokeStyle = staticCtx.strokeStyle = "black";
+    liveCtx.lineWidth = staticCtx.lineWidth = 2;
+    ctxRef.current = { live: liveCtx, static: staticCtx };
+
+    if (ctxRef.current.static) {
+        redrawCanvas(ctxRef.current.static, strokes);
+      }
 
     // Debug all incoming events from server
     socket.onAny((event, ...args) => {
@@ -65,54 +83,99 @@ export default function DrawPanel() {
         setTextBoxes(prev => prev.filter(tb => tb.id !== id));
     });
   
-    socket.on("draw", ({ x0, y0, x1, y1 }) => {
+    socket.on("draw-segment", ({ x0, y0, x1, y1 }) => {
         drawLine(x0, y0, x1, y1, false); // false: not to broadcast again
     });
 
+    socket.on("draw-stroke", (stroke) => {
+        setStrokes(prev => [...prev, stroke]);
+        drawStroke(ctxRef.current.static, stroke);
+    });
+
+    socket.on("clear-live-canvas", () => {
+      clearLiveCanvas();
+    });    
+
     // tell the browser don't start to slide yet
-    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
-    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
-    canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+    liveCanvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    liveCanvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    liveCanvas.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      socket.off("draw");
+      socket.off("draw-segment");
+      socket.off("draw-stroke");
+      socket.off("clear-live-canvas");
       socket.off("add-text");
       socket.off("update-text");
       socket.off("delete-text");
-      canvas.removeEventListener("touchstart", handleTouchStart);
-      canvas.removeEventListener("touchmove", handleTouchMove);
-      canvas.removeEventListener("touchend", handleTouchEnd);
+      liveCanvas.removeEventListener("touchstart", handleTouchStart);
+      liveCanvas.removeEventListener("touchmove", handleTouchMove);
+      liveCanvas.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("mouseup", handleMouseUp);
       socket.disconnect();
     };
   }, []);
 
+//   useEffect(() => {
+//     if (ctxRef.current.static) {
+//       redrawCanvas(ctxRef.current.static, strokes);
+//     }
+//   }, [strokes]);
+
   const drawLine = (x0, y0, x1, y1, emit = true) => {
-    const ctx = ctxRef.current;
-    drawLineOnCanvas(ctx, x0, y0, x1, y1);
+    const liveCtx = ctxRef.current.live;
+    drawRawLine(liveCtx, x0, y0, x1, y1);
     if (emit) {
-      socket.emit("draw", { x0, y0, x1, y1 });
+      socket.emit("draw-segment", { x0, y0, x1, y1 });
     }
   };
 
+  function clearLiveCanvas() {
+    const ctx = ctxRef.current?.live;
+    if (ctx) {
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+  }
+
   const handleMouseDown = (e) => {
     if (drawMode !== "draw") return;
-    const { x, y } = getCanvasCoords(e.nativeEvent, canvasRef.current);
-    isDrawing.current = { x, y };
+    const { x, y } = getCanvasCoords(e.nativeEvent, liveCanvasRef.current);
+    currentPoints.current = [[x, y]];
+    isDrawing.current = true;
   };
 
   const handleMouseMove = (e) => {
     if (drawMode !== "draw" || !isDrawing.current) return;
-    const { x, y } = getCanvasCoords(e.nativeEvent, canvasRef.current);
-    const { x: prevX, y: prevY } = isDrawing.current;
-    drawLine(prevX, prevY, x, y, true);
-    isDrawing.current = { x, y };
+    const { x, y } = getCanvasCoords(e.nativeEvent, liveCanvasRef.current);
+    const points = currentPoints.current;
+    points.push([x, y]);
+
+    if (points.length >= 2) {
+      const [prevX, prevY] = points.at(-2);
+      const [currX, currY] = points.at(-1);
+      drawRawLine(ctxRef.current.live, prevX, prevY, currX, currY);
+      socket.emit("draw-segment", { x0: prevX, y0: prevY, x1: currX, y1: currY });
+    }
   };
 
   const handleMouseUp = () => {
-    isDrawing.current = null;
+    if (!isDrawing.current || currentPoints.current.length < 2) return;
+    const newStroke = {
+      id: Date.now().toString(),
+      color: "black",
+      size: 3,
+      points: [...currentPoints.current],
+    };
+    drawStroke(ctxRef.current.static, newStroke);
+    setStrokes(prev => [...prev, newStroke]);
+    clearLiveCanvas();
+    socket.emit("clear-live-canvas", { canvasId });
+    
+    currentPoints.current = [];
+    isDrawing.current = false;
+    socket.emit("draw-stroke", newStroke);
   };
 
   const handleTouchStart = (e) => {
@@ -120,8 +183,10 @@ export default function DrawPanel() {
     const touch = e.touches[0];
     if (touch.touchType !== "stylus") return;
     e.preventDefault();
-    const { x, y } = getCanvasCoords(touch, canvasRef.current);
-    isDrawing.current = { x, y };
+    const { x, y } = getCanvasCoords(touch, liveCanvasRef
+.current);
+    currentPoints.current = [[x, y]];
+    isDrawing.current = true;
   };
 
   const handleTouchMove = (e) => {
@@ -129,17 +194,24 @@ export default function DrawPanel() {
     const touch = e.touches[0];
     if (touch.touchType !== "stylus" || !isDrawing.current) return;
     e.preventDefault();
-    const { x, y } = getCanvasCoords(touch, canvasRef.current);
-    const { x: prevX, y: prevY } = isDrawing.current;
-    drawLine(prevX, prevY, x, y, true);
-    isDrawing.current = { x, y };
+    const { x, y } = getCanvasCoords(touch, liveCanvasRef.current);
+    const points = currentPoints.current;
+    points.push([x, y]);
+
+    if (points.length >= 2) {
+    const [prevX, prevY] = points.at(-2);
+    const [currX, currY] = points.at(-1);
+    drawRawLine(ctxRef.current.live, prevX, prevY, currX, currY);
+    socket.emit("draw-segment", { x0: prevX, y0: prevY, x1: currX, y1: currY });
+}
   };
 
   const handleTouchEnd = (e) => {
     const touch = e.changedTouches[0];
     if (touch.touchType !== "stylus") return;
     e.preventDefault();
-    isDrawing.current = null;
+    isDrawing.current = false;
+    handleMouseUp();
   };
 
   const handleCanvasClick = (e) => {
@@ -154,7 +226,7 @@ export default function DrawPanel() {
         const el = inputRefs.current[id];
         if (el && measureRef.current) {
             measureRef.current.textContent = "";
-            el.style.width = measureRef.current.offsetWidth + 4 + "px";
+            el.style.width = measureRef.current.offsetWidth + 6 + "px";
             el.focus();
         }
     }, 0);
@@ -172,23 +244,27 @@ export default function DrawPanel() {
     const el = inputRefs.current[id];
     if (el && measureRef.current) {
         measureRef.current.textContent = newValue || " "; 
-        el.style.width = measureRef.current.offsetWidth + 4 + "px";
+        el.style.width = measureRef.current.offsetWidth + 6 + "px";
     }
   };
 
   return (
     <div className={styles.canvasContainer} ref={containerRef}>
+        <canvas
+            ref={liveCanvasRef}
+            className={styles.liveCanvas}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onClick={handleCanvasClick}
+        />
       <canvas
-        ref={canvasRef}
-        className={styles.drawingCanvas}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onClick={handleCanvasClick}
-      />
+            ref={staticCanvasRef}
+            className={styles.staticCanvas}
+        />
 
     <span
         ref={measureRef}
