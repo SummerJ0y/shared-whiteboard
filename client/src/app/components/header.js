@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import Image from 'next/image';
-import { usePageContext } from '../context/PageContext';
+import SharePopup from "./share";
 import styles from './header.module.css';
 
 export default function Header() {
@@ -49,9 +49,9 @@ export default function Header() {
                         </div>
                     )}
                     <div className={styles.shareButton} onClick={() => setShareWindow(!shareWindow)}>Share</div>
-                    {shareWindow && (
-                        <div className={styles.shareWindow}> </div>
-                    )}
+                        {shareWindow && (
+                            <SharePopup setShareWindow={setShareWindow} />
+                        )}
                     <div className={styles.userIcon} style={{ marginLeft: '10px' }}>                       
                     </div>
                 </div>

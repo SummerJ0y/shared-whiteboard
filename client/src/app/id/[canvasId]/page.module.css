@@ -23,7 +23,8 @@
     overscroll-behavior: none;
     /* scrollbar-gutter: stable;  */
   }
-  
+
+/*   
   .canvasText{
     display: flex;
     width: 480px;
@@ -40,4 +41,4 @@
     background-color: aqua;
     border: 1px solid yellow;
     flex-shrink: 0;
-  }
+  } */

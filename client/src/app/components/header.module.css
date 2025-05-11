@@ -98,10 +98,13 @@
 }
 
 .shareButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 70px;
   background-color: var(--lightBlue);
   color: black;
-  padding: 10px 18px 12px 18px;  
+  padding: 10px 18px 10px 18px;
   border-radius: 25px;
   font-size: 17px;
   font-weight: 500;
@@ -112,28 +115,11 @@
   user-select: none;
 }
 .shareButton:hover {
-  background-color: #47b4ff;
+  background-color: var(--buttonBlue1);
   color: black;
 }
 .shareButton:active {
   opacity: 0.6;
-}
-
-.shareWindow {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: fixed;
-  top: 150px;
-  right: 32%;
-  width: 33%;
-  min-width: 300px;
-  height: 400px;
-  background-color: white;
-  border: 2px solid black;
-  border-radius: 20px;
-  z-index: 100;
-  overflow-y: auto;
 }
 
 .userIcon {
