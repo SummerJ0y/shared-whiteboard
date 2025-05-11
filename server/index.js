@@ -33,12 +33,35 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
   // let currentCanvas = null;
   // Debug all events received from this client
+
   // socket.onAny((event, ...args) => {
   //   console.log(`[Server] Socket ${socket.id} sent event: ${event}`, args);
   // });
 
   setupDrawingHandlers(socket, io);
   setupEditorHandlers(socket, io);
+
+
+  socket.on("draw-segment", (data) => {
+    if (currentCanvas) {
+      // Send to all others in the same canvas
+      socket.to(currentCanvas).emit("draw-segment", data);
+    }
+  });
+
+  socket.on("draw-stroke", (stroke) => {
+    if (currentCanvas) {
+      socket.to(currentCanvas).emit("draw-stroke", stroke);
+    }
+  });  
+
+  socket.on("clear-live-canvas", () => {
+    if (currentCanvas) {
+      socket.to(currentCanvas).emit("clear-live-canvas");
+    }
+  });  
+
+
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);

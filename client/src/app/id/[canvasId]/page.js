@@ -1,10 +1,10 @@
 "use client";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Tiptap from "@/app/components/tiptap";
-import DrawPanel from "@/app/draw/draw";
 import DrawToolBar from "@/app/components/drawToolBar";
 import TextToolBar from "@/app/components/textToolBar";
 import { EditorProviderWrapper } from "@/app/context/EditorContext";
+import DrawPanel from "@/app/components/drawPanel";
 import styles from "./page.module.css";
 
 export default function Home() {
