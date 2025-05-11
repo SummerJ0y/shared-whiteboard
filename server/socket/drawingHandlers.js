@@ -15,6 +15,25 @@ module.exports = function setupDrawingHandlers(socket, io) {
         socket.to(currentCanvas).emit("draw", data);
       }
     });
+
+    socket.on("draw-segment", (data) => {
+      if (currentCanvas) {
+        // Send to all others in the same canvas
+        socket.to(currentCanvas).emit("draw-segment", data);
+      }
+    });
+  
+    socket.on("draw-stroke", (stroke) => {
+      if (currentCanvas) {
+        socket.to(currentCanvas).emit("draw-stroke", stroke);
+      }
+    });  
+  
+    socket.on("clear-live-canvas", () => {
+      if (currentCanvas) {
+        socket.to(currentCanvas).emit("clear-live-canvas");
+      }
+    });
   
     socket.on("add-text", (data) => {
       if (currentCanvas) {
@@ -36,4 +55,5 @@ module.exports = function setupDrawingHandlers(socket, io) {
         console.log(`[Server] delete-text from ${socket.id}:`, id);
       }
     });
+
 };

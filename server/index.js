@@ -41,28 +41,6 @@ io.on("connection", (socket) => {
   setupDrawingHandlers(socket, io);
   setupEditorHandlers(socket, io);
 
-
-  socket.on("draw-segment", (data) => {
-    if (currentCanvas) {
-      // Send to all others in the same canvas
-      socket.to(currentCanvas).emit("draw-segment", data);
-    }
-  });
-
-  socket.on("draw-stroke", (stroke) => {
-    if (currentCanvas) {
-      socket.to(currentCanvas).emit("draw-stroke", stroke);
-    }
-  });  
-
-  socket.on("clear-live-canvas", () => {
-    if (currentCanvas) {
-      socket.to(currentCanvas).emit("clear-live-canvas");
-    }
-  });  
-
-
-
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
