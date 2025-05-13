@@ -1,7 +1,8 @@
 const Document = require('../models/Document');
 const User = require('../models/User');
+const HttpError = require('../models/http_error');
 
-exports.saveWhiteboard = async (req, res) => {
+exports.saveWhiteboard = async (req, res, next) => {
   const {
     whiteboardId,
     editorHTML,
@@ -12,7 +13,7 @@ exports.saveWhiteboard = async (req, res) => {
   } = req.body;
 
   if (!userEmail || !whiteboardId) {
-    return res.status(400).json({ error: 'Missing required fields.' });
+    return next(new HttpError('Missing required fields.', 400));
   }
 
   try {
@@ -69,26 +70,24 @@ exports.saveWhiteboard = async (req, res) => {
     }
   } catch (error) {
     console.error('Error in saveWhiteboard:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return next(new HttpError('Internal server error while saving document.', 500));
   }
 };
 
 
-exports.loadWhiteboard = async (req, res) => {
+exports.loadWhiteboard = async (req, res, next) => {
   const { whiteboardId } = req.params;
   const { userEmail } = req.query;
 
   if (!whiteboardId || !userEmail) {
-    console.warn('Missing whiteboardId or userEmail in request');
-    return res.status(400).json({ error: 'Missing whiteboardId or userEmail.' });
+    return next(new HttpError('Missing whiteboardId or userEmail.', 400));
   }
 
   try {
     const doc = await Document.findOne({ whiteboardId });
 
     if (!doc) {
-      console.warn(`Document not found: ${whiteboardId}`);
-      return res.status(404).json({ error: 'Whiteboard not found.' });
+      return next(new HttpError('Whiteboard not found.', 404));
     }
 
     const isPublic = doc.access.visibility === 'public';
@@ -96,8 +95,7 @@ exports.loadWhiteboard = async (req, res) => {
     const hasAccess = Boolean(accessEntry);
 
     if (!isPublic && !hasAccess) {
-      console.warn(`Access denied for user ${userEmail} on whiteboard ${whiteboardId}`);
-      return res.status(403).json({ error: 'Access denied.' });
+      return next(new HttpError('Access denied to this whiteboard.', 403));
     }
 
     const userRole = hasAccess ? accessEntry.role : 'read-only';
@@ -113,6 +111,6 @@ exports.loadWhiteboard = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in loadWhiteboard:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return next(new HttpError('Internal server error while loading document.', 500));
   }
 };

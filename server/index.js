@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const setupDrawingHandlers = require("./socket/drawingHandlers");
 const setupEditorHandlers = require("./socket/editorHandlers");
 const whiteboardRoutes = require('./routes/whiteboardRoutes');
+const HttpError = require('./models/http_error');
 require('dotenv').config();
 
 const app = express();
@@ -56,6 +57,25 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
+});
+
+// this is not a 'error handling middleware', but its used to catch routes-not-found error
+app.use((req, res, next) => {
+    const error = new HttpError(
+        'Invalid route! Could not find this route', 404
+    );
+    return next(error);
+});
+
+// error handling middleware function that will only be executed
+// if any above middleware function yield an error
+app.use((error, req, res, next) => {
+    if (res.headerSent) {        
+        // if the header is sent, then we shouldn't send res anymore
+        return next(error);
+    }
+    res.status(error.code || 500);
+    res.json({message: error.message || 'An unknown error occured!'});
 });
 
 
