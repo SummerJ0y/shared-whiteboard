@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import Image from 'next/image';
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,10 +16,14 @@ export default function Header() {
     const [shareWindow, setShareWindow] = useState(false);
     const [userProfileWindow, setUserProfileWindow] = useState(false);
     const [editing, setEditing] = useState(false);
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const {
         editorHTML, strokes, textBoxes, whiteboardId, title, setTitle
     } = usePageContext();
+
+    if (status === 'loading') {
+        return null; // or a spinner component
+    }
 
     const handleUserClick = () => {
         if (!session) {

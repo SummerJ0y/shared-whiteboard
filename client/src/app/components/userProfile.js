@@ -10,11 +10,6 @@ import styles from './userProfile.module.css'
 export default function UserProfilePopup({ setUserProfileWindow }) {
     const [docs, setDocs] = useState([]);
     const { data: session, status } = useSession();
-
-    if (status === 'loading') {
-        return <div>Loading...</div>; // or a spinner component
-    }
-
     const {
         editorHTML, setEditorHTML,
         strokes, setStrokes,
@@ -22,6 +17,10 @@ export default function UserProfilePopup({ setUserProfileWindow }) {
         whiteboardId, setWhiteboardId,
         title, setTitle 
     } = usePageContext();
+
+    if (status === 'loading') {
+        return <div>Loading...</div>; // or a spinner component
+    }
 
     useEffect(() => {
         const fetchDocs = async () => {
@@ -31,7 +30,7 @@ export default function UserProfilePopup({ setUserProfileWindow }) {
             }
         };
         fetchDocs();
-    }, [session]);
+    }, []);
 
     const handleLoadDoc = async (docId) => {
         try{

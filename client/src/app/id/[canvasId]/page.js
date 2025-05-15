@@ -1,13 +1,25 @@
 "use client";
+import { useEffect } from "react";
+import { useParams } from 'next/navigation';
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Tiptap from "@/app/components/tiptap";
 import DrawToolBar from "@/app/components/drawToolBar";
 import TextToolBar from "@/app/components/textToolBar";
 import { EditorProviderWrapper } from "@/app/context/EditorContext";
 import DrawPanel from "@/app/components/drawPanel";
+import { usePageContext } from "@/app/context/PageContext";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const { canvasId } = useParams();
+  const { setWhiteboardId } = usePageContext();
+
+  useEffect(() => {
+    if(canvasId) {
+      setWhiteboardId(canvasId);
+    }
+  }, [canvasId]);
+
   return (
     <EditorProviderWrapper>
     <div className={styles.main}>
