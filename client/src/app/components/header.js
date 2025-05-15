@@ -2,23 +2,63 @@
 import { useState } from "react";
 import Image from 'next/image';
 import { signIn, signOut, useSession } from "next-auth/react";
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import SharePopup from "./share";
+import UserProfilePopup from "./userProfile";
+import { usePageContext } from "../context/PageContext";
 import styles from './header.module.css';
+
 
 export default function Header() {
     const [onlineToggle, setOnlineToggle] = useState(false);
     const [shareWindow, setShareWindow] = useState(false);
-    const [fileName, setFileName] = useState("Untitled document");
+    const [userProfileWindow, setUserProfileWindow] = useState(false);
     const [editing, setEditing] = useState(false);
     const { data: session } = useSession();
+    const {
+        editorHTML, strokes, textBoxes, whiteboardId, title, setTitle
+    } = usePageContext();
 
     const handleUserClick = () => {
         if (!session) {
             signIn("google");
         } else {
-            signOut(); // toggle logout for now
+            setUserProfileWindow(true);
         }
     };
+
+    const handleSave = async () => {
+        console.log("save clicked!");
+        if(!session) {
+            console.log("1");
+            toast.info("Please sign in to save your document.");
+            signIn("google", { callbackUrl: window.location.href });
+            return;
+        }
+        if (!whiteboardId) {
+            console.log("2");
+            toast.error("Missing whiteboard ID.");
+            return;
+        }
+
+        try {
+            console.log("try save!");
+            await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/whiteboard/save`, {
+                editorHTML,
+                strokes,
+                textBoxes,
+                whiteboardId,
+                userEmail: session.user.email,
+                title,
+            });
+            toast.success("Document saved!");
+        } catch (err) {
+            toast.error("Save failed");
+            console.error(err);
+        }
+    }
 
     return (
         <div className={styles.headerOuterBox}>
@@ -36,9 +76,9 @@ export default function Header() {
                     
                     {editing ? (
                         <input
-                            className={styles.fileNameInput}
-                            value={fileName}
-                            onChange={(e) => setFileName(e.target.value)}
+                            className={styles.fileInputBox}
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             onBlur={() => setEditing(false)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') setEditing(false);
@@ -47,7 +87,7 @@ export default function Header() {
                         />
                         ) : (
                             <div className={styles.fileNameBox} onClick={() => setEditing(true)}>
-                                {fileName}
+                                {title}
                             </div>
                         )
                     }
@@ -77,11 +117,15 @@ export default function Header() {
                             <ul>Yingjia Liu7</ul>
                         </div>
                     )}
+
+                    <div className={styles.shareButton} style={{ marginRight: '10px' }} onClick={handleSave}>Save</div>
+
                     <div className={styles.shareButton} onClick={() => setShareWindow(!shareWindow)}>Share</div>
                         {shareWindow && (
                             <SharePopup setShareWindow={setShareWindow} />
                         )}
-                    <div className={styles.userIcon} style={{ marginLeft: '10px' }} onClick={handleUserClick}>  
+
+                    <div className={styles.userIcon} style={{ marginLeft: '10px', marginRight: '5px' }} onClick={handleUserClick}>  
                         <Image
                             src={session?.user?.image || "/icons/userIcon.svg"}
                             width={40}
@@ -91,6 +135,9 @@ export default function Header() {
                             priority
                         />                     
                     </div>
+                        {userProfileWindow && (
+                            <UserProfilePopup setUserProfileWindow={setUserProfileWindow} />
+                        )}
                 </div>
             </div>
         </div>

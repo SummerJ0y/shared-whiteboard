@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { usePageContext } from "../context/PageContext";
 import socket from "../utils/socket";
 
 export default function useTextInput(drawMode, canvasId) {
@@ -8,7 +9,8 @@ export default function useTextInput(drawMode, canvasId) {
   const inputRefs = useRef({});
   const measureRef = useRef(null);
 
-  const [textBoxes, setTextBoxes] = useState([]);
+  // const [textBoxes, setTextBoxes] = useState([]);
+  const { textBoxes, setTextBoxes } = usePageContext();
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {

@@ -45,7 +45,7 @@
   justify-content: right;
   align-items: center;
   height: 100%;
-  width: 250px;
+  width: 280px;
   background-color: transparent;
 }
 
@@ -58,6 +58,25 @@
   width: 100%;
   font-size: 20px;
   font-weight: 600;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.fileInputBox {
+  display: flex;
+  font-family: inherit;
+  justify-content: left;
+  align-items: center;
+  border: none;
+  height: 60%;
+  width: 100%;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .docMenuBar {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import socket from "../utils/socket";
+import { usePageContext } from "../context/PageContext";
 import {
   getCanvasCoords,
   drawRawLine,
@@ -14,7 +15,8 @@ export default function useDrawing(drawMode, canvasId) {
 
   const isDrawing = useRef(false);
   const currentPoints = useRef([]);
-  const [strokes, setStrokes] = useState([]);
+  // const [strokes, setStrokes] = useState([]);
+  const { strokes, setStrokes } = usePageContext();
 
   function clearLiveCanvas() {
     const ctx = ctxRef.current?.live;

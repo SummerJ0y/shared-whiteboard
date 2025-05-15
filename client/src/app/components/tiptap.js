@@ -8,6 +8,7 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 import { useEditorContext } from '../context/EditorContext';
+import { usePageContext } from "../context/PageContext";
 import socket from "../utils/socket";
 import styles from './tiptap.module.css';
 
@@ -29,11 +30,12 @@ const content = `
 `
 const Tiptap = () => {
   const { setEditor } = useEditorContext();
+  const { setEditorHTML } = usePageContext();
   const { canvasId } = useParams();
   const isRemoteUpdate = useRef(false);
   const editor = useEditor({
     extensions,
-    content,
+    // content,
     immediatelyRender: false,
     onCreate: ({ editor }) => {
       setEditor(editor);
@@ -42,6 +44,7 @@ const Tiptap = () => {
     onUpdate: ({ editor }) => {
       if (!isRemoteUpdate.current) {
         const html = editor.getHTML();
+        setEditorHTML(html);
         socket.emit("editor-update", { editorId: canvasId, content: html });
       }
     },

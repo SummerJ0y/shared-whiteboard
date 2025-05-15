@@ -16,12 +16,15 @@
     "@tiptap/pm": "^2.11.7",
     "@tiptap/react": "^2.11.7",
     "@tiptap/starter-kit": "^2.11.7",
+    "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
     "next": "15.2.4",
     "next-auth": "^4.24.11",
     "perfect-freehand": "^1.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-resizable-panels": "^2.1.7",
+    "react-toastify": "^11.0.5",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 "use client"
 import Image from 'next/image';
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import styles from './share.module.css'
 export default function SharePopup({ setShareWindow }) {
     const [showCopyMessage, setShowCopyMessage] = useState(false);

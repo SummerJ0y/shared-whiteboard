@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const setupDrawingHandlers = require("./socket/drawingHandlers");
 const setupEditorHandlers = require("./socket/editorHandlers");
 const whiteboardRoutes = require('./routes/whiteboardRoutes');
+const userRoutes = require("./routes/userRoutes");
 const HttpError = require('./models/http_error');
 require('dotenv').config();
 
@@ -31,8 +32,9 @@ app.get("/create-canvas", (req, res) => {
   res.json({ canvasId: newCanvasId });
 });
 
-// whiteboard routes
-app.use('/api/whiteboard', whiteboardRoutes);
+app.use('/api/whiteboard', whiteboardRoutes); // whiteboard routes
+app.use('/api/user', userRoutes); // user routes
+
 
 // Create a raw HTTP server
 const server = http.createServer(app); 
