@@ -15,7 +15,7 @@ export default function useDrawing(drawMode, canvasId) {
 
   const isDrawing = useRef(false);
   const currentPoints = useRef([]);
-  // const [strokes, setStrokes] = useState([]);
+  const initDraw = useRef(false);
   const { strokes, setStrokes } = usePageContext();
 
   function clearLiveCanvas() {
@@ -75,6 +75,15 @@ export default function useDrawing(drawMode, canvasId) {
         window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [canvasId]);
+
+  // NEW: handles the first render of the database's saving drawing
+  useEffect(() => {
+  if (!initDraw.current && strokes.length > 0 && ctxRef.current.static) {
+    redrawCanvas(ctxRef.current.static, strokes);
+    initDraw.current = true; // Ensure this runs only once
+  }
+  }, [strokes]);
+
 
   const handleMouseDown = (e) => {
     if (drawMode !== "draw") return;

@@ -21,21 +21,18 @@ const extensions = [
   }),
 ]
 
-const content = `
-  <h2>Hi there,</h2>
-  <p>This is a <em>basic</em> example of <strong>Tiptap</strong>.</p>
-  <ul><li>List item 1</li><li>List item 2</li></ul>
-  <pre><code class="language-css">body { display: none; }</code></pre>
-  <blockquote>Wow, that’s amazing. — Mom</blockquote>
-`
 const Tiptap = () => {
   const { setEditor } = useEditorContext();
-  const { setEditorHTML } = usePageContext();
+  const { editorHTML, setEditorHTML } = usePageContext();
   const { canvasId } = useParams();
   const isRemoteUpdate = useRef(false);
+  const hasInitialized = useRef(false);
+
+  console.log(editorHTML);
+
   const editor = useEditor({
     extensions,
-    // content,
+    content: editorHTML || "",
     immediatelyRender: false,
     onCreate: ({ editor }) => {
       setEditor(editor);
@@ -49,6 +46,19 @@ const Tiptap = () => {
       }
     },
   });
+
+  // NEW: handles the first render of the database's saving editor html
+  useEffect(() => {
+    if (!editor || hasInitialized.current) return;
+
+    if (editorHTML) {
+      isRemoteUpdate.current = true;
+      editor.commands.setContent(editorHTML, false);
+      isRemoteUpdate.current = false;
+      hasInitialized.current = true;
+    }
+    
+  }, [editor, editorHTML]);
 
   useEffect(() => {
     if(!editor) return;

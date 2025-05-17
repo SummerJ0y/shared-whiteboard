@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns'
 import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { usePageContext } from '../context/PageContext';
 import styles from './userProfile.module.css'
 
@@ -17,6 +18,8 @@ export default function UserProfilePopup({ setUserProfileWindow }) {
         whiteboardId, setWhiteboardId,
         title, setTitle 
     } = usePageContext();
+
+    const router = useRouter();
 
     if (status === 'loading') {
         return <div>Loading...</div>; // or a spinner component
@@ -38,14 +41,14 @@ export default function UserProfilePopup({ setUserProfileWindow }) {
             await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/whiteboard/save`, {
                 editorHTML, strokes, textBoxes, whiteboardId, userEmail: session.user.email, title,
             });
-            // load new doc
-            const res = await axios.get(`/api/whiteboard/load/${docId}?userEmail=${session.user.email}`);
-            const { editorHTML, strokes, textBoxes, title} = res.data;
-            setEditorHTML(editorHTML); setStrokes(strokes); setTextBoxes(textBoxes);
-            setWhiteboardId(docId); setTitle(title); setUserProfileWindow(false);
         } catch (err) {
-            console.error("Load failed", err);
+            console.error("Failed to auto-save current doc", err);
         }
+
+        // Redirect to new whiteboard
+        router.push(`/id/${docId}`);
+        window.location.href = `/id/${docId}`;
+        setUserProfileWindow(false);
     };
 
     function formatDateTime (dateString) {

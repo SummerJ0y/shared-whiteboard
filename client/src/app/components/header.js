@@ -34,21 +34,17 @@ export default function Header() {
     };
 
     const handleSave = async () => {
-        console.log("save clicked!");
         if(!session) {
-            console.log("1");
             toast.info("Please sign in to save your document.");
             signIn("google", { callbackUrl: window.location.href });
             return;
         }
         if (!whiteboardId) {
-            console.log("2");
             toast.error("Missing whiteboard ID.");
             return;
         }
 
         try {
-            console.log("try save!");
             await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/whiteboard/save`, {
                 editorHTML,
                 strokes,

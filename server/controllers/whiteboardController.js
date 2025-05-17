@@ -79,10 +79,6 @@ exports.loadWhiteboard = async (req, res, next) => {
   const { whiteboardId } = req.params;
   const { userEmail } = req.query;
 
-  if (!whiteboardId || !userEmail) {
-    return next(new HttpError('Missing whiteboardId or userEmail.', 400));
-  }
-
   try {
     const doc = await Document.findOne({ whiteboardId });
 
@@ -90,25 +86,38 @@ exports.loadWhiteboard = async (req, res, next) => {
       return next(new HttpError('Whiteboard not found.', 404));
     }
 
-    const isPublic = doc.access.visibility === 'public';
-    const accessEntry = doc.access.users.find(user => user.email === userEmail);
-    const hasAccess = Boolean(accessEntry);
-
-    if (!isPublic && !hasAccess) {
-      return next(new HttpError('Access denied to this whiteboard.', 403));
+    if(doc.access.visibility === 'public'){
+      return res.status(200).json({
+        editorHTML: doc.editorHTML,
+        strokes: doc.strokes,
+        textBoxes: doc.textBoxes,
+        title: doc.title,
+        accessLevel: userRole
+      });
     }
+    
+    if(!userEmail) {
+      return next(new HttpError('This document is restricted. Please log in to view it.', 401));
+    } 
 
-    const userRole = hasAccess ? accessEntry.role : 'read-only';
+    else{
+      const accessEntry = doc.access.users.find(user => user.email === userEmail);
+      const hasAccess = Boolean(accessEntry);
 
-    console.log(`Document ${whiteboardId} loaded for ${userEmail} (role: ${userRole})`);
+      if(!hasAccess) {
+        return next(new HttpError('You do not have access to this document.', 403));
+      }
 
-    return res.status(200).json({
-      editorHTML: doc.editorHTML,
-      strokes: doc.strokes,
-      textBoxes: doc.textBoxes,
-      title: doc.title,
-      accessLevel: userRole
-    });
+      const userRole = accessEntry.role;
+      console.log(`Document ${whiteboardId} loaded for ${userEmail} (role: ${userRole})`);
+      return res.status(200).json({
+        editorHTML: doc.editorHTML,
+        strokes: doc.strokes,
+        textBoxes: doc.textBoxes,
+        title: doc.title,
+        accessLevel: userRole
+      });
+    }  
   } catch (error) {
     console.error('Error in loadWhiteboard:', error);
     return next(new HttpError('Internal server error while loading document.', 500));
