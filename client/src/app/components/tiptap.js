@@ -28,8 +28,6 @@ const Tiptap = () => {
   const isRemoteUpdate = useRef(false);
   const hasInitialized = useRef(false);
 
-  console.log(editorHTML);
-
   const editor = useEditor({
     extensions,
     content: editorHTML || "",

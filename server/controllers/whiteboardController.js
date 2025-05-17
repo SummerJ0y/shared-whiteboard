@@ -74,7 +74,6 @@ exports.saveWhiteboard = async (req, res, next) => {
   }
 };
 
-
 exports.loadWhiteboard = async (req, res, next) => {
   const { whiteboardId } = req.params;
   const { userEmail } = req.query;
@@ -92,7 +91,6 @@ exports.loadWhiteboard = async (req, res, next) => {
         strokes: doc.strokes,
         textBoxes: doc.textBoxes,
         title: doc.title,
-        accessLevel: userRole
       });
     }
     
@@ -121,5 +119,112 @@ exports.loadWhiteboard = async (req, res, next) => {
   } catch (error) {
     console.error('Error in loadWhiteboard:', error);
     return next(new HttpError('Internal server error while loading document.', 500));
+  }
+};
+
+// === Access Control === //
+
+exports.getAccessInfo = async (req, res, next) => {
+  const { whiteboardId } = req.params;
+  try {
+    const doc = await Document.findOne({ whiteboardId });
+    if (!doc) return next(new HttpError('Document not found.', 404));
+
+    return res.status(200).json({
+      visibility: doc.access.visibility,
+      users: doc.access.users
+    });
+  } catch (error) {
+    console.error('Error in getAccessInfo:', error);
+    return next(new HttpError('Failed to fetch access info.', 500));
+  }
+};
+
+exports.inviteUser = async (req, res, next) => {
+  const { whiteboardId, email } = req.body;
+  if (!whiteboardId || !email) return next(new HttpError('Missing fields.', 400));
+
+  try {
+    const doc = await Document.findOne({ whiteboardId });
+    if (!doc) return next(new HttpError('Document not found.', 404));
+
+    const alreadyExists = doc.access.users.find(user => user.email === email);
+    if (alreadyExists) return res.status(200).json({ message: 'User already invited.' });
+
+    doc.access.users.push({ email, role: 'read-only' });
+    await doc.save();
+
+    return res.status(200).json({ message: 'User invited successfully.' });
+  } catch (error) {
+    console.error('Error in inviteUser:', error);
+    return next(new HttpError('Failed to invite user.', 500));
+  }
+};
+
+exports.updateVisibility = async (req, res, next) => {
+  const { whiteboardId, visibility } = req.body;
+  if (!whiteboardId || !visibility) return next(new HttpError('Missing fields.', 400));
+
+  try {
+    const doc = await Document.findOne({ whiteboardId });
+    if (!doc) return next(new HttpError('Document not found.', 404));
+
+    doc.access.visibility = visibility;
+    await doc.save();
+
+    return res.status(200).json({ message: 'Visibility updated.' });
+  } catch (error) {
+    console.error('Error in updateVisibility:', error);
+    return next(new HttpError('Failed to update visibility.', 500));
+  }
+};
+
+exports.updateUserRole = async (req, res, next) => {
+  const { whiteboardId, email, role } = req.body;
+  if (!whiteboardId || !email || !role) {
+    return next(new HttpError('Missing fields.', 400));
+  }
+
+  if (role === 'owner') {
+    return next(new HttpError('Cannot assign owner role to others.', 403));
+  }
+
+  try {
+    const doc = await Document.findOne({ whiteboardId });
+    if (!doc) return next(new HttpError('Document not found.', 404));
+
+    const ownerEmail = doc.createdBy;
+    if (email === ownerEmail) {
+      return next(new HttpError('Owner cannot change their own role.', 403));
+    }
+
+    const user = doc.access.users.find(u => u.email === email);
+    if (!user) return next(new HttpError('User not found in document.', 404));
+
+    user.role = role;
+    await doc.save();
+
+    return res.status(200).json({ message: 'User role updated.' });
+  } catch (error) {
+    console.error('Error in updateUserRole:', error);
+    return next(new HttpError('Failed to update user role.', 500));
+  }
+};
+
+exports.removeUser = async (req, res, next) => {
+  const { whiteboardId, email } = req.body;
+  if (!whiteboardId || !email) return next(new HttpError('Missing fields.', 400));
+
+  try {
+    const doc = await Document.findOne({ whiteboardId });
+    if (!doc) return next(new HttpError('Document not found.', 404));
+
+    doc.access.users = doc.access.users.filter(user => user.email !== email);
+    await doc.save();
+
+    return res.status(200).json({ message: 'User removed successfully.' });
+  } catch (error) {
+    console.error('Error in removeUser:', error);
+    return next(new HttpError('Failed to remove user.', 500));
   }
 };

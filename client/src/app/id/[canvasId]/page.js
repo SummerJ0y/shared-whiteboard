@@ -25,7 +25,7 @@ export default function Home() {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/whiteboard/load/${canvasId}`, { params: { userEmail } });
         const { editorHTML, strokes, textBoxes, title } = res.data;
-        console.log(res);
+        // console.log(res);
         setWhiteboardId(canvasId);
         setEditorHTML(editorHTML);
         setStrokes(strokes);
