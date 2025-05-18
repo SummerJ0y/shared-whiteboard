@@ -3,6 +3,9 @@ const router = express.Router();
 
 const whiteboardController = require('../controllers/whiteboardController');
 
+// Create a new whiteboard
+router.post('/create-canvas', whiteboardController.createWhiteboard);
+
 // Save and load whiteboard content
 router.post('/save', whiteboardController.saveWhiteboard);
 router.get('/load/:whiteboardId', whiteboardController.loadWhiteboard);

@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
-const { v4: uuidv4 } = require("uuid");
 const morgan = require("morgan");
 const setupDrawingHandlers = require("./socket/drawingHandlers");
 const setupEditorHandlers = require("./socket/editorHandlers");
@@ -27,10 +26,6 @@ app.use(cors()); // Allow frontend to connect from a different port (like 3000)
 app.use(express.json()); // Parse JSON body
 app.use(morgan('tiny'));
 
-app.get("/create-canvas", (req, res) => {
-  const newCanvasId = uuidv4(); // generate a new session ID
-  res.json({ canvasId: newCanvasId });
-});
 
 app.use('/api/whiteboard', whiteboardRoutes); // whiteboard routes
 app.use('/api/user', userRoutes); // user routes

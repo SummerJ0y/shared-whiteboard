@@ -1,0 +1,11 @@
+.mainContainer {
+  display: grid;
+  grid-template-rows: 90px 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+
+.whiteboard {
+  overflow: auto;
+  background-color: var(--background-color);
+}

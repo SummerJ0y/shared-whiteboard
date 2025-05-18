@@ -1,6 +1,33 @@
+const { v4: uuidv4 } = require("uuid");
 const Document = require('../models/Document');
 const User = require('../models/User');
 const HttpError = require('../models/http_error');
+
+exports.createWhiteboard = async (req, res, next) => {
+  try {
+    const newCanvasId = uuidv4();
+    const newDoc = new Document({
+      whiteboardId: newCanvasId,
+      title: 'Untitled whiteboard',
+      editorHTML: '',
+      strokes: [],
+      textBoxes: [],
+      access: {
+        visibility: 'public',
+        users: [] // Empty initially
+      },
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+
+    await newDoc.save();
+
+    return res.status(201).json({ canvasId: newCanvasId });
+  } catch (error) {
+    console.error('Error in createWhiteboard:', error);
+    return next(new HttpError('Failed to create whiteboard.', 500));
+  }
+};
 
 exports.saveWhiteboard = async (req, res, next) => {
   const {
@@ -21,53 +48,48 @@ exports.saveWhiteboard = async (req, res, next) => {
     const existingDoc = await Document.findOne({ whiteboardId });
 
     if (!existingDoc) {
-      console.log(`Saving new document: ${whiteboardId}`);
-
-      // Create new document
-      const newDoc = new Document({
-        whiteboardId,
-        title,
-        createdBy: userEmail,
-        editorHTML,
-        strokes,
-        textBoxes,
-        access: {
-          visibility: 'restricted',
-          users: [{ email: userEmail, role: 'owner' }]
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-
-      await newDoc.save();
-
-      // Also update user access
-      await User.findOneAndUpdate(
-        { email: userEmail },
-        {
-          $addToSet: {
-            documents: { whiteboardId, role: 'owner' }
-          }
-        },
-        { upsert: true }
-      );
-
-      return res.status(200).json({ message: 'Document created successfully.' });
-
-    } else {
-      console.log(`Updating existing document: ${whiteboardId}`);
-
-      // Overwrite all relevant fields
-      existingDoc.editorHTML = editorHTML;
-      existingDoc.strokes = strokes;
-      existingDoc.textBoxes = textBoxes;
-      existingDoc.title = title;
-      existingDoc.updatedAt = new Date();
-
-      await existingDoc.save();
-
-      return res.status(200).json({ message: 'Document updated successfully.' });
+      return next(new HttpError('Document not found. Cannot save.', 404));
     }
+
+    console.log(`Updating document: ${whiteboardId}`);
+    // Update content fields only
+    existingDoc.editorHTML = editorHTML;
+    existingDoc.strokes = strokes;
+    existingDoc.textBoxes = textBoxes;
+    existingDoc.title = title;
+    existingDoc.updatedAt = new Date();
+
+    const accessUsers = existingDoc.access.users;
+
+    if(accessUsers.length === 0){ // first user of the doc -> the owner of the doc -> need to change in the future
+      accessUsers.push({ email: userEmail, role: 'owner'});
+    }
+    else{
+      const alreadyExists = accessUsers.some(user => user.email === userEmail);
+      if(!alreadyExists){
+        accessUsers.push({ email: userEmail, role: 'editor'});
+      }
+      // else: already present, do nothing
+    }
+
+    await existingDoc.save();
+
+    // Optional: sync user access record (if tracking doc list per user)
+    await User.findOneAndUpdate(
+      { email: userEmail },
+      {
+        $addToSet: {
+          documents: {
+            whiteboardId,
+            role: accessUsers.find(u => u.email === userEmail)?.role || 'editor'
+          }
+        }
+      },
+      { upsert: true }
+    );
+
+    return res.status(200).json({ message: 'Document updated successfully.' });
+    
   } catch (error) {
     console.error('Error in saveWhiteboard:', error);
     return next(new HttpError('Internal server error while saving document.', 500));

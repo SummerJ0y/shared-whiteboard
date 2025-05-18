@@ -1,26 +1,44 @@
 'use client';
+import Image from 'next/image';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import LandingHeader from './components/landingHeader';
+import styles from './page.module.css';
 
-export default function Home() {
-  const router = useRouter();
+export default function HomePage() {
+  
+  return (
+    <div className={styles.main}>
+      <LandingHeader />
+      <h1>Shared Whiteboard</h1>
+      <h2>Free online freeform collaborative workspace.</h2>
+      <div className={styles.textBox}>
+        <p>
+          Shared Whiteboard is a real-time online collaboration tool that lets you sketch ideas, co-edit documents, and brainstorm visually — all in one place. Whether you are working solo or with a team, it’s fast, flexible, and completely free to use.
+        </p>
+      </div>
+      <div className={styles.demo}>
+        <div className={styles.row1}>
+          <div className={styles.demoImage}>
+            <Image src="/favicon.ico" width={1152} height={648} alt="pic1" priority />
+          </div>
+          <div className={styles.demoText}>
+            <p>
+              Experience seamless collaboration with live updates across users. Draw freeform sketches, add text, or type structured notes — all changes appear instantly for everyone. Our rich text editor and intuitive canvas are designed to help teams ideate visually and document simultaneously, without friction.
+            </p>
+          </div>
+        </div>
 
-  useEffect(() => {
-    const createAndRedirect = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SOCKET_SERVER_URL}/create-canvas`);
-        const data = await res.json();
-        const canvasId = data.canvasId;
-        router.push(`/id/${canvasId}`);
-        window.location.href = `/id/${canvasId}`;
-      } catch (err) {
-        console.error("Failed to create canvas:", err);
-      }
-    };
-
-    createAndRedirect();
-  }, []);
-
-  return <p>Creating your whiteboard, please wait a few seconds...</p>;
+        <div className={styles.row1}>
+          <div className={styles.demoImage}>
+            <Image src="/favicon.ico" width={1115} height={836} alt="pic2" priority/>
+          </div>
+          <div className={styles.demoText}>
+            <p>
+              Invite teammates by email and assign them roles like owner, editor, or read-only. Documents can be set to public or restricted, giving you complete control over who can view or edit. Sharing is as simple as sending a link, with flexible permissions built in for secure collaboration.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
