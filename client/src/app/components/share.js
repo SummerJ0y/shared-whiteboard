@@ -13,6 +13,7 @@ export default function SharePopup({ setShareWindow }) {
     const [authorizedUsers, setAuthorizedUsers] = useState([]);
     const { data: session } = useSession();
     const { whiteboardId } = usePageContext();
+    const [currentURL, setCurrentURL] = useState('');
 
     const handleCopy = () => {
         if (navigator.clipboard) {
@@ -36,6 +37,10 @@ export default function SharePopup({ setShareWindow }) {
             console.error("Failed to fetch access info", err);
         }
     };
+
+    useEffect(() => {
+        setCurrentURL(window.location.href);
+    }, []);
 
     useEffect(() => {
         if (whiteboardId) {
@@ -99,10 +104,10 @@ export default function SharePopup({ setShareWindow }) {
             <div className={styles.mainContainer}>
                 <div className={styles.urlContainer}>
                     <input 
-                      type="text" 
-                      value={typeof window !== "undefined" ? window.location.href : ""} 
-                      readOnly 
-                      className={styles.urlBar}
+                        type="text" 
+                        value={currentURL} 
+                        readOnly 
+                        className={styles.urlBar}
                     />
                     <button className={styles.copyButton} onClick={handleCopy}>Copy</button>
 

@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from 'next/image';
 import { signIn, useSession } from "next-auth/react";
 import axios from 'axios';
@@ -20,6 +20,9 @@ export default function Header() {
     const {
         editorHTML, strokes, textBoxes, whiteboardId, title, setTitle
     } = usePageContext();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => setIsMounted(true), []);
 
     if (status === 'loading') {
         return null; // or a spinner component
@@ -126,15 +129,21 @@ export default function Header() {
                         )}
 
                     <div className={styles.userIcon} style={{ marginLeft: '10px', marginRight: '5px' }} onClick={handleUserClick}>  
-                        <Image
-                            src={session?.user?.image || "/icons/userIcon.svg"}
-                            width={40}
-                            height={40}
-                            alt="User"
-                            style={{ borderRadius: "100%" }}
-                            priority
-                        />                     
+                        {isMounted ? (
+                            <Image
+                                src={session?.user?.image || "/icons/userIcon.svg"}
+                                width={40}
+                                height={40}
+                                alt="User"
+                                style={{ borderRadius: "100%" }}
+                                priority
+                            />
+                         ) : (
+                            <div style={{ width: 40, height: 40, backgroundColor: "#ccc", borderRadius: "100%" }} />
+                        )}                     
                     </div>
+
+
                         {userProfileWindow && (
                             <UserProfilePopup setUserProfileWindow={setUserProfileWindow} />
                         )}

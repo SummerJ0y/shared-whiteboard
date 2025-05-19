@@ -39,7 +39,7 @@
   }
 
   .handleArea:hover {
-    background-color: lightgray;
+    background-color: var(--gray-ladder1);
   }
 
   .buttonContainer {
