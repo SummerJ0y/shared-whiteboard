@@ -24,3 +24,50 @@
     /* scrollbar-gutter: stable;  */
   }
 
+  /* Resize handler */
+  .handleWrapper {
+    position: relative;
+    width: 8px;
+  }
+
+  .handleArea {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+
+  .handleArea:hover {
+    background-color: lightgray;
+  }
+
+  .buttonContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  .arrowButton {
+    width: 24px;                     
+    height: 24px;                    
+    display: flex;                  
+    align-items: center;           
+    justify-content: center;       
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .arrowButton:hover {
+    background-color: #eee;
+    transform: scale(1.1);
+  }
