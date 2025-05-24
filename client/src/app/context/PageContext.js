@@ -1,7 +1,7 @@
 // This is universal context that stores states used by header and canvas
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useRef } from "react";
 
 const PageContext = createContext();
 
@@ -13,6 +13,8 @@ export const PageContextProvider = ({ children }) => {
   const [whiteboardId, setWhiteboardId] = useState("");
   const [title, setTitle] = useState("Untitled document");
 
+  const staticCanvasRef = useRef(null);
+
   return (
     <PageContext.Provider
       value={{
@@ -22,6 +24,7 @@ export const PageContextProvider = ({ children }) => {
         textBoxes, setTextBoxes,
         whiteboardId, setWhiteboardId,
         title, setTitle,
+        staticCanvasRef
       }}
     >
       {children}

@@ -6,12 +6,12 @@ import { useParams } from "next/navigation";
 import styles from './drawPanel.module.css';
 
 export default function DrawPanel() {
-  const { drawMode } = usePageContext();
+  const { drawMode, staticCanvasRef } = usePageContext();
   const { canvasId } = useParams();
   const containerRef = useRef(null);
 
   const {
-    drawRefs: { liveCanvasRef, staticCanvasRef },
+    drawRefs: { liveCanvasRef },
     handleDrawEvents
   } = useDrawing(drawMode, canvasId);
 

@@ -32,7 +32,7 @@
   justify-content: right;
   border: none;
   height: 100%;
-  width: 140px;
+  width: 220px;
   background-color: transparent;
 }
 
@@ -41,7 +41,7 @@
   background-color: var(--gray-ladder2);
   border: none;
   border-radius: 15px;
-  width: 50px;
+  min-width: 50px;
   height: auto;
   padding: 4px 10px 7px 10px;
   transition: background-color 0.3s;

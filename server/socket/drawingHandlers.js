@@ -34,6 +34,13 @@ module.exports = function setupDrawingHandlers(socket, io) {
         socket.to(currentCanvas).emit("clear-live-canvas");
       }
     });
+
+    socket.on("clear-canvas", () => {
+      if (currentCanvas) {
+        console.log(`[Server] clear-canvas from ${socket.id}`);
+        socket.to(currentCanvas).emit("clear-canvas");
+      }
+    });
   
     socket.on("add-text", (data) => {
       if (currentCanvas) {

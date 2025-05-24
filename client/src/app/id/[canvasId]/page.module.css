@@ -34,7 +34,7 @@
     height: 100%;
     width: 100%;
     position: relative;
-    background-color: transparent;
+    background-color: #EEEEEE;
     transition: background-color 0.2s ease;
   }
 

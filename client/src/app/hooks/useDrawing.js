@@ -10,13 +10,14 @@ import {
 
 export default function useDrawing(drawMode, canvasId) {
   const liveCanvasRef = useRef(null);
-  const staticCanvasRef = useRef(null);
   const ctxRef = useRef({ live: null, static: null });
 
   const isDrawing = useRef(false);
   const currentPoints = useRef([]);
   const initDraw = useRef(false);
-  const { strokes, setStrokes } = usePageContext();
+  const { staticCanvasRef, strokes, setStrokes } = usePageContext();
+
+  const isDrawingMode = drawMode === "draw" || drawMode === "eraser";
 
   function clearLiveCanvas() {
     const ctx = ctxRef.current?.live;
@@ -65,10 +66,20 @@ export default function useDrawing(drawMode, canvasId) {
       clearLiveCanvas();
     });
 
+    socket.on("clear-canvas", () => {
+      const ctx = ctxRef.current.static;
+      if (ctx) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        redrawCanvas(ctx, []);
+      }
+      setStrokes([]);
+    });
+
     return () => {
       socket.off("draw-segment");
       socket.off("draw-stroke");
       socket.off("clear-live-canvas");
+      socket.off("clear-canvas");
       liveCanvas.removeEventListener("touchstart", handleTouchStart);
         liveCanvas.removeEventListener("touchmove", handleTouchMove);
         liveCanvas.removeEventListener("touchend", handleTouchEnd);
@@ -108,10 +119,16 @@ export default function useDrawing(drawMode, canvasId) {
 
   const handleMouseUp = () => {
     if (!isDrawing.current || currentPoints.current.length < 2) return;
+    // const newStroke = {
+    //   id: Date.now().toString(),
+    //   color: "black",
+    //   size: 2.5,
+    //   points: [...currentPoints.current],
+    // };
     const newStroke = {
       id: Date.now().toString(),
-      color: "black",
-      size: 2.5,
+      color: drawMode === "eraser" ? "white" : "black",
+      size: drawMode === "eraser" ? 10 : 2.5,
       points: [...currentPoints.current],
     };
     drawStroke(ctxRef.current.static, newStroke);
@@ -125,7 +142,7 @@ export default function useDrawing(drawMode, canvasId) {
   };
 
   const handleTouchStart = (e) => {
-    if (drawMode !== "draw") return;
+    if (!isDrawingMode) return;
     const touch = e.touches[0];
     if (touch.touchType !== "stylus") return;
     e.preventDefault();
@@ -135,7 +152,7 @@ export default function useDrawing(drawMode, canvasId) {
   };
 
   const handleTouchMove = (e) => {
-    if (drawMode !== "draw") return;
+    if (!isDrawingMode) return;
     const touch = e.touches[0];
     if (touch.touchType !== "stylus" || !isDrawing.current) return;
     e.preventDefault();
