@@ -107,7 +107,7 @@ export default function Header() {
                     </div>
                 </div>
                 <div className={styles.rightSection1}>
-                    <div className={styles.online} onClick={() => setOnlineToggle(!onlineToggle)}>8 online</div>
+                    <div className={styles.online} onClick={() => setOnlineToggle(!onlineToggle)}>2 online</div>
                     {onlineToggle && (
                         <div className={styles.onlinePannel}>
                             <ul>Yingjia Liu</ul>
