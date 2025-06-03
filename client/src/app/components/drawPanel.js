@@ -31,12 +31,16 @@ export default function DrawPanel() {
         className={styles.liveCanvas}
         onMouseDown={handleDrawEvents.handleMouseDown}
         onMouseMove={handleDrawEvents.handleMouseMove}
-        onMouseUp={handleDrawEvents.handleMouseUp}
+        // onMouseUp={handleDrawEvents.handleMouseUp}
         onTouchStart={handleDrawEvents.handleTouchStart}
         onTouchMove={handleDrawEvents.handleTouchMove}
         onTouchEnd={handleDrawEvents.handleTouchEnd}
       />
-      <canvas ref={staticCanvasRef} className={styles.staticCanvas} />
+      <canvas 
+        ref={staticCanvasRef} 
+        className={styles.staticCanvas} 
+        // onMouseUp={handleDrawEvents.handleMouseUp}
+      />
       {renderTextInputs(containerRef)}
     </div>
   );

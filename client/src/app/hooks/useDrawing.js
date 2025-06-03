@@ -7,6 +7,8 @@ import {
   drawStroke,
   redrawCanvas,
 } from "../utils/canvasUtils";
+import { TOOL_CONFIG } from "../utils/toolConfig";
+
 
 export default function useDrawing(drawMode, canvasId) {
   const liveCanvasRef = useRef(null);
@@ -26,6 +28,20 @@ export default function useDrawing(drawMode, canvasId) {
     }
   }
 
+  //————————————————————————————————————————————————————
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+        if (isDrawing.current) {
+            handleMouseUp();
+        }
+    };
+    window.addEventListener("mouseup", handleGlobalMouseUp);
+    return () => {
+        window.removeEventListener("mouseup", handleGlobalMouseUp);
+        };
+    }, [drawMode]); 
+    //————————————————maybe need global mouse up listener——————————————
+
   useEffect(() => {
     socket.emit("join-canvas", canvasId);
 
@@ -41,8 +57,6 @@ export default function useDrawing(drawMode, canvasId) {
     liveCanvas.addEventListener("touchstart", handleTouchStart, { passive: false });
     liveCanvas.addEventListener("touchmove", handleTouchMove, { passive: false });
     liveCanvas.addEventListener("touchend", handleTouchEnd, { passive: false });
-
-    window.addEventListener("mouseup", handleMouseUp);
 
     liveCtx.lineCap = staticCtx.lineCap = "round";
     liveCtx.strokeStyle = staticCtx.strokeStyle = "black";
@@ -76,14 +90,14 @@ export default function useDrawing(drawMode, canvasId) {
     });
 
     return () => {
-      socket.off("draw-segment");
-      socket.off("draw-stroke");
-      socket.off("clear-live-canvas");
-      socket.off("clear-canvas");
-      liveCanvas.removeEventListener("touchstart", handleTouchStart);
+        socket.off("draw-segment");
+        socket.off("draw-stroke");
+        socket.off("clear-live-canvas");
+        socket.off("clear-canvas");
+        liveCanvas.removeEventListener("touchstart", handleTouchStart);
         liveCanvas.removeEventListener("touchmove", handleTouchMove);
         liveCanvas.removeEventListener("touchend", handleTouchEnd);
-        window.removeEventListener("mouseup", handleMouseUp);
+        window.removeEventListener("mouseup", handleGlobalMouseUp);
     };
   }, [canvasId]);
 
@@ -97,14 +111,15 @@ export default function useDrawing(drawMode, canvasId) {
 
 
   const handleMouseDown = (e) => {
-    if (drawMode !== "draw") return;
+    console.log("mouseDown: ",drawMode);
+    if (!isDrawingMode) return;
     const { x, y } = getCanvasCoords(e.nativeEvent, liveCanvasRef.current);
     currentPoints.current = [[x, y]];
     isDrawing.current = true;
   };
 
   const handleMouseMove = (e) => {
-    if (drawMode !== "draw" || !isDrawing.current) return;
+    if (!isDrawing.current) return;
     const { x, y } = getCanvasCoords(e.nativeEvent, liveCanvasRef.current);
     const points = currentPoints.current;
     points.push([x, y]);
@@ -112,26 +127,39 @@ export default function useDrawing(drawMode, canvasId) {
     if (points.length >= 2) {
       const [prevX, prevY] = points.at(-2);
       const [currX, currY] = points.at(-1);
-      drawRawLine(ctxRef.current.live, prevX, prevY, currX, currY);
+
+      const ctx =
+      drawMode === "eraser" ? ctxRef.current.static : ctxRef.current.live;
+
+      drawRawLine(ctx, prevX, prevY, currX, currY, {
+        ...TOOL_CONFIG[drawMode],
+        });
+        //emit要改
       socket.emit("draw-segment", { x0: prevX, y0: prevY, x1: currX, y1: currY });
     }
+    console.log("mouseMove: ",drawMode);
   };
 
   const handleMouseUp = () => {
+    console.log("mouseUp: ",drawMode);
+      if (drawMode === "eraser") {
+          console.log("here!")
+        isDrawing.current = false;
+        return;
+      } 
     if (!isDrawing.current || currentPoints.current.length < 2) return;
-    // const newStroke = {
-    //   id: Date.now().toString(),
-    //   color: "black",
-    //   size: 2.5,
-    //   points: [...currentPoints.current],
-    // };
+    // console.log("mouseUp: ",drawMode);
+    const { color, size, blendMode } = TOOL_CONFIG[drawMode];
     const newStroke = {
-      id: Date.now().toString(),
-      color: drawMode === "eraser" ? "white" : "black",
-      size: drawMode === "eraser" ? 10 : 2.5,
-      points: [...currentPoints.current],
+        id: Date.now().toString(),
+        color,
+        size,
+        blendMode,
+        points: [...currentPoints.current],
     };
+
     drawStroke(ctxRef.current.static, newStroke);
+    // console.log(TOOL_CONFIG[drawMode]);
     setStrokes(prev => [...prev, newStroke]);
     clearLiveCanvas();
     socket.emit("clear-live-canvas", { canvasId });

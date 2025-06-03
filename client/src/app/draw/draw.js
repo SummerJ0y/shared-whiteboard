@@ -9,6 +9,7 @@ import {
     drawStroke,
     redrawCanvas,
 } from "../utils/canvasUtils";  
+import { TOOL_CONFIG } from "../utils/toolConfig";
 import styles from './draw.module.css'
 
 // drawMode: "draw" or "text" on canvas
@@ -162,10 +163,13 @@ export default function DrawPanel1() {
 
   const handleMouseUp = () => {
     if (!isDrawing.current || currentPoints.current.length < 2) return;
+
+    const { color = "white", size, blendMode } = TOOL_CONFIG[drawMode] || TOOL_CONFIG.draw;
     const newStroke = {
       id: Date.now().toString(),
-      color: "black",
-      size: 3,
+      color,
+      size,
+      blendMode,
       points: [...currentPoints.current],
     };
     drawStroke(ctxRef.current.static, newStroke);
