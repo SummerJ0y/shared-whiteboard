@@ -1,5 +1,6 @@
 // utils/canvasUtils.js
 import getStroke from "perfect-freehand";
+import { TOOL_CONFIG } from "./toolConfig";
 
 export function getCanvasCoords(pointer, canvas) {
     const rect = canvas.getBoundingClientRect();
@@ -10,8 +11,8 @@ export function getCanvasCoords(pointer, canvas) {
   }
 
 
-  export function drawRawLine(ctx, x0, y0, x1, y1, { color = "red", size = 2.5, blendMode = "source-over" } = {}) {
-    // const originalBlend = ctx.globalCompositeOperation;
+  export function drawRawLine(ctx, drawMode, x0, y0, x1, y1) {
+    const {blendMode, color, size} = TOOL_CONFIG[drawMode];
     ctx.globalCompositeOperation = blendMode;
     ctx.strokeStyle = color;
     ctx.lineWidth = size;
@@ -22,7 +23,6 @@ export function getCanvasCoords(pointer, canvas) {
     ctx.stroke();
     ctx.closePath();
   
-    // ctx.globalCompositeOperation = originalBlend;
   }  
 
 // const myStroke = {

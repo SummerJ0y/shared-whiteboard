@@ -65,9 +65,11 @@ export default function useDrawing(drawMode, canvasId) {
     ctxRef.current = { live: liveCtx, static: staticCtx };
     redrawCanvas(staticCtx, strokes);
 
-    socket.on("draw-segment", ({ x0, y0, x1, y1 }) => {
-      const ctx = ctxRef.current.live;
-      if (ctx) drawRawLine(ctx, x0, y0, x1, y1);
+    socket.on("draw-segment", ({drawMode, x0, y0, x1, y1 }) => {
+        const ctx =
+        drawMode === "eraser" ? ctxRef.current.static : ctxRef.current.live;
+  
+        drawRawLine(ctx, drawMode, x0, y0, x1, y1);
     });
 
     socket.on("draw-stroke", (stroke) => {
@@ -131,11 +133,9 @@ export default function useDrawing(drawMode, canvasId) {
       const ctx =
       drawMode === "eraser" ? ctxRef.current.static : ctxRef.current.live;
 
-      drawRawLine(ctx, prevX, prevY, currX, currY, {
-        ...TOOL_CONFIG[drawMode],
-        });
+      drawRawLine(ctx, drawMode, prevX, prevY, currX, currY);
         //emit要改
-      socket.emit("draw-segment", { x0: prevX, y0: prevY, x1: currX, y1: currY });
+      socket.emit("draw-segment", {drawMode:drawMode, x0: prevX, y0: prevY, x1: currX, y1: currY });
     }
     console.log("mouseMove: ",drawMode);
   };
@@ -191,7 +191,7 @@ export default function useDrawing(drawMode, canvasId) {
     if (points.length >= 2) {
       const [prevX, prevY] = points.at(-2);
       const [currX, currY] = points.at(-1);
-      drawRawLine(ctxRef.current.live, prevX, prevY, currX, currY);
+      drawRawLine(ctxRef.current.live, drawMode, prevX, prevY, currX, currY);
       socket.emit("draw-segment", { x0: prevX, y0: prevY, x1: currX, y1: currY });
     }
   };
