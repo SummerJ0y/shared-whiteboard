@@ -29,17 +29,17 @@ export default function useDrawing(drawMode, canvasId) {
   }
 
   //————————————————————————————————————————————————————
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-        if (isDrawing.current) {
-            handleMouseUp();
-        }
-    };
-    window.addEventListener("mouseup", handleGlobalMouseUp);
-    return () => {
-        window.removeEventListener("mouseup", handleGlobalMouseUp);
-        };
-    }, [drawMode]); 
+  // useEffect(() => {
+  //   const handleGlobalMouseUp = () => {
+  //       if (isDrawing.current) {
+  //           handleMouseUp();
+  //       }
+  //   };
+  //   window.addEventListener("mouseup", handleGlobalMouseUp);
+  //   return () => {
+  //       window.removeEventListener("mouseup", handleGlobalMouseUp); 
+  //       };
+  //   }, [drawMode]); 
     //————————————————maybe need global mouse up listener——————————————
 
   useEffect(() => {
@@ -54,9 +54,9 @@ export default function useDrawing(drawMode, canvasId) {
     const liveCtx = liveCanvas.getContext("2d");
     const staticCtx = staticCanvas.getContext("2d");
 
-    liveCanvas.addEventListener("touchstart", handleTouchStart, { passive: false });
-    liveCanvas.addEventListener("touchmove", handleTouchMove, { passive: false });
-    liveCanvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+    // liveCanvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    // liveCanvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    // liveCanvas.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     liveCtx.lineCap = staticCtx.lineCap = "round";
     liveCtx.strokeStyle = staticCtx.strokeStyle = "black";
@@ -96,12 +96,27 @@ export default function useDrawing(drawMode, canvasId) {
         socket.off("draw-stroke");
         socket.off("clear-live-canvas");
         socket.off("clear-canvas");
+        // liveCanvas.removeEventListener("touchstart", handleTouchStart);
+        // liveCanvas.removeEventListener("touchmove", handleTouchMove);
+        // liveCanvas.removeEventListener("touchend", handleTouchEnd);
+        // window.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+  }, [canvasId]);
+
+  useEffect(() => {
+    const liveCanvas = liveCanvasRef.current;
+    if (!liveCanvas) return;
+    
+    liveCanvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    liveCanvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    liveCanvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+    
+    return () => {
         liveCanvas.removeEventListener("touchstart", handleTouchStart);
         liveCanvas.removeEventListener("touchmove", handleTouchMove);
         liveCanvas.removeEventListener("touchend", handleTouchEnd);
-        window.removeEventListener("mouseup", handleGlobalMouseUp);
     };
-  }, [canvasId]);
+}, [drawMode]);
 
   // NEW: handles the first render of the database's saving drawing
   useEffect(() => {
@@ -143,7 +158,6 @@ export default function useDrawing(drawMode, canvasId) {
   const handleMouseUp = () => {
     console.log("mouseUp: ",drawMode);
       if (drawMode === "eraser") {
-          console.log("here!")
         isDrawing.current = false;
         return;
       } 
@@ -170,6 +184,9 @@ export default function useDrawing(drawMode, canvasId) {
   };
 
   const handleTouchStart = (e) => {
+    console.log("=== Touch Start 开始 ===");
+    console.log("isDrawingMode:", isDrawingMode);
+    console.log("touch type:", e.touches[0].touchType);
     if (!isDrawingMode) return;
     const touch = e.touches[0];
     if (touch.touchType !== "stylus") return;
@@ -177,6 +194,8 @@ export default function useDrawing(drawMode, canvasId) {
     const { x, y } = getCanvasCoords(touch, liveCanvasRef.current);
     currentPoints.current = [[x, y]];
     isDrawing.current = true;
+    console.log("touch start drawMode: ", drawMode);
+    console.log("=== Touch Start 结束 ===");
   };
 
   const handleTouchMove = (e) => {
@@ -191,17 +210,27 @@ export default function useDrawing(drawMode, canvasId) {
     if (points.length >= 2) {
       const [prevX, prevY] = points.at(-2);
       const [currX, currY] = points.at(-1);
-      drawRawLine(ctxRef.current.live, drawMode, prevX, prevY, currX, currY);
-      socket.emit("draw-segment", { x0: prevX, y0: prevY, x1: currX, y1: currY });
+      const ctx = drawMode === "eraser" ? ctxRef.current.static : ctxRef.current.live;
+      
+      drawRawLine(ctx, drawMode, prevX, prevY, currX, currY);
+      socket.emit("draw-segment", {
+        drawMode: drawMode,
+        x0: prevX,
+        y0: prevY,
+        x1: currX,
+        y1: currY
+      });
     }
   };
 
   const handleTouchEnd = (e) => {
+    console.log("=== Touch End 开始 ===");
     const touch = e.changedTouches[0];
     if (touch.touchType !== "stylus") return;
     e.preventDefault();
     handleMouseUp();
-    isDrawing.current = false;
+    console.log("touch end drawMode: ", drawMode);
+    console.log("=== Touch End 结束 ===");
   };
 
   return {
