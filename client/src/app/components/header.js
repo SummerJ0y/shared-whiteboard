@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 import Image from 'next/image';
 import { signIn, useSession } from "next-auth/react";
 import axios from 'axios';
@@ -18,36 +18,89 @@ export default function Header() {
     const [editing, setEditing] = useState(false);
     const { data: session, status } = useSession();
     const {
-        editorHTML, strokes, textBoxes, whiteboardId, title, setTitle
+        editorHTML, strokes, textBoxes, whiteboardId, title, setTitle,
+        setEditorHTML, setStrokes, setTextBoxes, setWhiteboardId,
     } = usePageContext();
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => setIsMounted(true), []);
 
+    // Restore the unsaved data after logiin
+    useLayoutEffect(() => {
+        if(session) {
+            const saved = localStorage.getItem("unsavedData");
+            if(saved){
+                const { editorHTML, strokes, textBoxes, title, whiteboardId } = JSON.parse(saved);
+                localStorage.removeItem("unsavedData");
+                setEditorHTML(editorHTML); 
+                setStrokes(strokes); 
+                setTextBoxes(textBoxes); 
+                console.log("BEFORE: title in context", title);
+                setTitle(title); 
+                console.log("AFTER: title in context", title);
+                setWhiteboardId(whiteboardId);
+                axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/whiteboard/save`, {
+                    editorHTML,
+                    strokes,
+                    textBoxes,
+                    whiteboardId,
+                    userEmail: session.user.email,
+                    title,
+                }).then(() => {
+                    toast.success("Document auto-saved after login!");
+                }).catch((err) => {
+                    toast.error("Auto-save failed");
+                    console.error(err);
+                });
+            }
+        }
+    }, [session]);
+
     if (status === 'loading') {
         return null; // or a spinner component
     }
 
-    const handleUserClick = () => {
+    const handleClickUserIcon = async() => {
         if (!session) {
-            signIn("google");
+            localStorage.setItem("unsavedData", JSON.stringify({
+                editorHTML,
+                strokes,
+                textBoxes,
+                title,
+                whiteboardId
+            }));
+            await signIn("google");
+            return;
         } else {
             setUserProfileWindow(true);
         }
     };
 
-    const handleSave = async () => {
-        if(!session) {
-            toast.info("Please sign in to save your document.");
-            signIn("google", { callbackUrl: window.location.href });
-            return;
-        }
+    const handleClickSave = async() => {
         if (!whiteboardId) {
             toast.error("Missing whiteboard ID.");
             return;
         }
+        else if(!session) {
+            toast.info("Please sign in to save your document.");
+            localStorage.setItem("unsavedData", JSON.stringify({
+                editorHTML,
+                strokes,
+                textBoxes,
+                title,
+                whiteboardId
+            }));
+            await signIn("google");
+            return;
+        }
+        else {
+            handleSave();
+        }
+    }
 
+    const handleSave = async () => {
         try {
+            console.log(editorHTML);
             await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/whiteboard/save`, {
                 editorHTML,
                 strokes,
@@ -121,14 +174,14 @@ export default function Header() {
                         </div>
                     )}
 
-                    <div className={styles.shareButton} style={{ marginRight: '10px' }} onClick={handleSave}>Save</div>
+                    <div className={styles.shareButton} style={{ marginRight: '10px' }} onClick={handleClickSave}>Save</div>
 
                     <div className={styles.shareButton} onClick={() => setShareWindow(!shareWindow)}>Share</div>
                         {shareWindow && (
                             <SharePopup setShareWindow={setShareWindow} />
                         )}
 
-                    <div className={styles.userIcon} style={{ marginLeft: '10px', marginRight: '5px' }} onClick={handleUserClick}>  
+                    <div className={styles.userIcon} style={{ marginLeft: '10px', marginRight: '5px' }} onClick={handleClickUserIcon}>  
                         {isMounted ? (
                             <Image
                                 src={session?.user?.image || "/icons/userIcon.svg"}

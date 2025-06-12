@@ -19,7 +19,7 @@ export default function HomePage() {
       <div className={styles.demo}>
         <div className={styles.row1}>
           <div className={styles.demoImage}>
-            <Image src="/pic1.png" width={1152} height={648} alt="pic1" priority />
+            <Image src="/pic1.jpg" width={1071} height={600} alt="pic1" priority />
           </div>
           <div className={styles.demoText}>
             <p>
@@ -30,7 +30,7 @@ export default function HomePage() {
 
         <div className={styles.row1}>
           <div className={styles.demoImage}>
-            <Image src="/pic2.png" width={1152} height={648} alt="pic2" priority/>
+            <Image src="/pic2.jpg" width={1071} height={600} alt="pic2" priority/>
           </div>
           <div className={styles.demoText}>
             <p>

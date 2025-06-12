@@ -99,7 +99,7 @@ export default function useDrawing(drawMode, canvasId) {
         liveCanvas.removeEventListener("touchstart", handleTouchStart);
         liveCanvas.removeEventListener("touchmove", handleTouchMove);
         liveCanvas.removeEventListener("touchend", handleTouchEnd);
-        window.removeEventListener("mouseup", handleGlobalMouseUp);
+        //window.removeEventListener("mouseup", handleGlobalMouseUp);
     };
   }, [canvasId]);
 
