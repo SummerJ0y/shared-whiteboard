@@ -35,15 +35,14 @@ Frontend (Next.js + React)
 ├── Drawing & Text Canvas
 │    - Live sync via Socket.IO
 │
-├── Axios HTTP API Calls
-│    - Save/load whiteboards
-│
-└── Connects to...
+└── Axios HTTP API Calls
+     - Save/load whiteboards
+
 
 Backend (Express.js)
 │
 ├── REST API (Model–Controller–Route structure)
-│    - Routes: /save, /load/:id, /access/:id, /invite
+│    - Routes: /save, /load/:id, /access/:id, /invite, ...
 │    - Controllers: DB logic using Mongoose
 │
 ├── Socket.IO Server
