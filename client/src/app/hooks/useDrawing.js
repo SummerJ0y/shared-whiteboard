@@ -149,7 +149,6 @@ export default function useDrawing(drawMode, canvasId) {
       drawMode === "eraser" ? ctxRef.current.static : ctxRef.current.live;
 
       drawRawLine(ctx, drawMode, prevX, prevY, currX, currY);
-        //emit要改
       socket.emit("draw-segment", {drawMode:drawMode, x0: prevX, y0: prevY, x1: currX, y1: currY });
     }
     console.log("mouseMove: ",drawMode);

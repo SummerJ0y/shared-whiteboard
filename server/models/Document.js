@@ -27,7 +27,7 @@ const DocumentSchema = new mongoose.Schema({
   strokes: [StrokeSchema], // <-- store drawing data
   textBoxes: [TextBoxSchema], // <-- store canvas text boxes
   access: {
-    visibility: { type: String, enum: ['public', 'restricted'], default: 'restricted' },
+    visibility: { type: String, enum: ['public-edit', 'public-read', 'restricted'], default: 'restricted' },
     users: [AccessSchema]
   },
   createdAt: { type: Date, default: Date.now },

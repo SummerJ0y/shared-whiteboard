@@ -13,7 +13,7 @@ exports.createWhiteboard = async (req, res, next) => {
       strokes: [],
       textBoxes: [],
       access: {
-        visibility: 'public',
+        visibility: 'public-edit',
         users: [] // Empty initially
       },
       createdAt: new Date(),
