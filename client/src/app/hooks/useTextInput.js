@@ -40,17 +40,65 @@ export default function useTextInput(drawMode, canvasId) {
     };
   }, []);
 
+  // const handleCanvasClick = (e, containerRef) => {
+  //   if (drawMode !== "text") return;
+  //   const rect = containerRef.current.getBoundingClientRect();
+  //   const x = e.clientX - rect.left;
+  //   const y = e.clientY - rect.top;
+
+  //   const id = Date.now().toString() + "-" + Math.random().toString(36).slice(2, 6);
+  //   const newBox = { id, x, y, value: "" };
+  //   setTextBoxes(prev => [...prev, newBox]);
+  //   setEditingId(id);
+
+  //   setTimeout(() => {
+  //     const el = inputRefs.current[id];
+  //     if (el && measureRef.current) {
+  //       measureRef.current.textContent = "";
+  //       el.style.width = measureRef.current.offsetWidth + 6 + "px";
+  //       el.focus();
+  //     }
+  //   }, 0);
+  //   socket.emit("add-text", newBox);
+  // };
+
   const handleCanvasClick = (e, containerRef) => {
     if (drawMode !== "text") return;
+  
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
+  
+    // Check if the click was inside an existing text box
+    for (const box of textBoxes) {
+      const el = inputRefs.current[box.id];
+      if (!el) continue;
+  
+      const boxX = box.x - 2;
+      const boxY = box.y - TEXT_OFFSET_Y;
+      const boxWidth = el.offsetWidth;
+      const boxHeight = FONT_SIZE + 6;
+  
+      const clickedInside =
+        x >= boxX &&
+        x <= boxX + boxWidth &&
+        y >= boxY &&
+        y <= boxY + boxHeight;
+  
+      if (clickedInside) {
+        // Focus the existing input box for editing
+        setEditingId(box.id);
+        el.focus();
+        return;
+      }
+    }
+  
+    // If click was not on an existing box, create a new one
     const id = Date.now().toString() + "-" + Math.random().toString(36).slice(2, 6);
     const newBox = { id, x, y, value: "" };
     setTextBoxes(prev => [...prev, newBox]);
     setEditingId(id);
-
+  
     setTimeout(() => {
       const el = inputRefs.current[id];
       if (el && measureRef.current) {
@@ -59,8 +107,10 @@ export default function useTextInput(drawMode, canvasId) {
         el.focus();
       }
     }, 0);
+  
     socket.emit("add-text", newBox);
   };
+  
 
   const handleTextBoxChange = (id, newValue) => {
     if (newValue.length > 40) return;
